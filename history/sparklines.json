@@ -1,17 +1,22 @@
 {
   "energy": [
-    80
+    80,
+    50
   ],
   "industrials": [
-    70
+    70,
+    50
   ],
   "semiconductors": [
-    80
+    80,
+    50
   ],
   "materials": [
-    80
+    80,
+    50
   ],
   "financials": [
-    40
+    40,
+    50
   ]
 }
