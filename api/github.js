@@ -18,5 +18,6 @@ export default async function handler(req, res) {
 
   const r = await fetch(url, opts);
   const data = await r.json();
+  if (!r.ok) return res.status(r.status).json({ ...data, _debug_url: url, _owner: OWNER, _repo: REPO });
   res.status(r.status).json(data);
 }
