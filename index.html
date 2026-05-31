@@ -490,29 +490,6 @@ body {
 
 </div>
 
-<!-- Setup Modal -->
-<div class="modal-overlay hidden" id="modal-overlay">
-  <div class="modal">
-    <h2>Setup</h2>
-    <p>GitHub token and repository details are stored locally in your browser only. The Anthropic API key is stored securely on the server.</p>
-    <div class="form-group">
-      <label>GitHub Personal Access Token (repo scope)</label>
-      <input type="password" id="input-gt" placeholder="ghp_..." autocomplete="off">
-    </div>
-    <div class="form-group">
-      <label>GitHub Repo Owner</label>
-      <input type="text" id="input-ro" placeholder="your-username" autocomplete="off">
-    </div>
-    <div class="form-group">
-      <label>GitHub Repo Name</label>
-      <input type="text" id="input-rn" placeholder="sector-rotation" autocomplete="off">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" id="modal-cancel">Cancel</button>
-      <button class="btn-accent" id="modal-save">Save</button>
-    </div>
-  </div>
-</div>
 
 <script>
 'use strict';
@@ -605,31 +582,19 @@ const state = {
 // SETTINGS
 // ─────────────────────────────────────────────
 
-const LS = { gt: 'srst_gt', ro: 'srst_ro', rn: 'srst_rn' };
-
-const cfg = {
-  get gt() { return localStorage.getItem(LS.gt) || ''; },
-  get ro() { return localStorage.getItem(LS.ro) || ''; },
-  get rn() { return localStorage.getItem(LS.rn) || ''; },
-  ok() { return !!(this.gt && this.ro && this.rn); }
-};
-
 // ─────────────────────────────────────────────
-// GITHUB API
+// GITHUB API (server-side proxy)
 // ─────────────────────────────────────────────
 
-function ghHdr() {
-  return { 'Authorization': `token ${cfg.gt}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
-}
 async function ghGet(path) {
-  const r = await fetch(`https://api.github.com/repos/${cfg.ro}/${cfg.rn}/contents/${path}`, { headers: ghHdr() });
+  const r = await fetch('/api/github', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path, method: 'GET' }) });
   if (r.status === 404) return null;
   if (!r.ok) throw new Error(`GitHub GET ${path}: ${r.status}`);
   return r.json();
 }
 async function ghPut(path, content, msg, sha) {
   const body = { message: msg, content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), ...(sha ? { sha } : {}) };
-  const r = await fetch(`https://api.github.com/repos/${cfg.ro}/${cfg.rn}/contents/${path}`, { method: 'PUT', headers: ghHdr(), body: JSON.stringify(body) });
+  const r = await fetch('/api/github', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path, method: 'PUT', body }) });
   if (!r.ok) { const t = await r.text(); throw new Error(`GitHub PUT: ${r.status} ${t.slice(0, 200)}`); }
   return r.json();
 }
@@ -757,7 +722,6 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 async function runScan() {
   if (state.scanning) return;
-  if (!cfg.ok()) { openModal(); return; }
 
   state.scanning = true;
   setScanningUI(true);
@@ -1201,27 +1165,6 @@ function showError(msg) {
   el.textContent = `⚠ ${msg}`;
 }
 
-// ─────────────────────────────────────────────
-// MODAL
-// ─────────────────────────────────────────────
-
-function openModal() {
-  document.getElementById('input-gt').value = cfg.gt;
-  document.getElementById('input-ro').value = cfg.ro;
-  document.getElementById('input-rn').value = cfg.rn;
-  document.getElementById('modal-overlay').classList.remove('hidden');
-}
-function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
-function saveModal() {
-  const gt = document.getElementById('input-gt').value.trim();
-  const ro = document.getElementById('input-ro').value.trim();
-  const rn = document.getElementById('input-rn').value.trim();
-  if (!gt || !ro || !rn) { alert('GitHub token, owner, and repo name are required.'); return; }
-  localStorage.setItem(LS.gt, gt);
-  localStorage.setItem(LS.ro, ro);
-  localStorage.setItem(LS.rn, rn);
-  closeModal();
-}
 
 // ─────────────────────────────────────────────
 // UTILS
@@ -1262,14 +1205,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initChips();
 
   document.getElementById('run-btn').addEventListener('click', runScan);
-  document.getElementById('settings-btn').addEventListener('click', openModal);
-  document.getElementById('modal-save').addEventListener('click', saveModal);
-  document.getElementById('modal-cancel').addEventListener('click', closeModal);
-  document.getElementById('modal-overlay').addEventListener('click', e => {
-    if (e.target === document.getElementById('modal-overlay')) closeModal();
-  });
-
-  if (!cfg.ok()) openModal();
 });
 </script>
 </body>
