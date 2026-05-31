@@ -388,6 +388,11 @@ body {
 }
 .btn-accent:hover { background: #5a6cd4; border-color: #5a6cd4; }
 
+/* Save status */
+.save-status { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 0; }
+.save-status.ok { color: var(--buy); }
+.save-status.fail { color: var(--sell); }
+
 /* How It Works button */
 .how-btn {
   background: none; border: none; color: var(--accent); font-family: 'Space Mono', monospace;
@@ -477,6 +482,7 @@ body {
     </button>
     <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     <div class="error-block hidden" id="error-block"></div>
+    <div class="save-status hidden" id="save-status"></div>
     <button class="how-btn" id="how-btn">How &amp; why this works →</button>
   </div>
 
@@ -653,7 +659,10 @@ async function ghGet(path) {
   if (!r.ok) throw new Error(`GitHub GET ${path}: ${r.status}`);
   return r.json();
 }
-async function ghPut(path, content, msg, sha) {
+async function ghPut(path, content, msg) {
+  // Always fetch fresh SHA immediately before write to avoid 409 conflicts
+  const existing = await ghGet(path);
+  const sha = existing?.sha;
   const body = { message: msg, content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), ...(sha ? { sha } : {}) };
   const r = await fetch('/api/github', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path, method: 'PUT', body }) });
   if (!r.ok) { const t = await r.text(); throw new Error(`GitHub PUT: ${r.status} ${t.slice(0, 200)}`); }
@@ -852,8 +861,8 @@ async function runScan() {
     sectors: Object.fromEntries(Object.entries(state.results).map(([k, v]) => [k, { composite: v.composite, score: v.score, signal: v.signal, oneliner: v.oneliner, indicators: Object.fromEntries(Object.entries(v.indicators).map(([ik, iv]) => [ik, { signal: iv.signal, summary: iv.summary }])) }])),
     rotationLeader: Object.entries(state.results).filter(([,v]) => v.signal === 'BUY').sort(([,a],[,b]) => b.composite - a.composite)[0]?.[0] ?? null
   };
-  (async () => { try { const e = await ghGet(`signals/${today}.json`); await ghPut(`signals/${today}.json`, payload, `Signal scan ${today}`, e?.sha); } catch (e) { showError(e.message); } })();
-  (async () => { try { const e = await ghJSON('history/sparklines.json'); await ghPut('history/sparklines.json', state.sparklines, 'Update sparklines', e?.sha); } catch {} })();
+  (async () => { try { await ghPut(`signals/${today}.json`, payload, `Signal scan ${today}`); showSaveStatus('saved'); } catch (e) { showSaveStatus('failed'); showError(e.message); } })();
+  (async () => { try { await ghPut('history/sparklines.json', state.sparklines, 'Update sparklines'); } catch {} })();
 
   state.loaded = true;
   state.scanTs = new Date();
@@ -1217,6 +1226,15 @@ function updateFooter() {
   if (state.scanTs) {
     el.textContent = `Last scan ${MONTHS[state.scanTs.getMonth()]} ${state.scanTs.getDate()}, ${String(state.scanTs.getHours()).padStart(2,'0')}:${String(state.scanTs.getMinutes()).padStart(2,'0')}`;
   }
+}
+
+function showSaveStatus(state) {
+  const el = document.getElementById('save-status');
+  if (!el) return;
+  el.classList.remove('hidden', 'ok', 'fail');
+  const now = new Date().toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' });
+  if (state === 'saved') { el.classList.add('ok'); el.textContent = `✓ Results saved to GitHub — ${now}`; }
+  else { el.classList.add('fail'); el.textContent = `⚠ Scan complete — results not saved`; }
 }
 
 function showError(msg) {
