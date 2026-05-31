@@ -7,7 +7,7 @@
       "signal": "HOLD",
       "oneliner": "",
       "indicators": {
-        "supply": {
+        "eia_inventory": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
@@ -19,7 +19,7 @@
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
-        "eia_inventory": {
+        "supply": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
@@ -35,11 +35,7 @@
       "signal": "HOLD",
       "oneliner": "",
       "indicators": {
-        "new_orders": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
-        "transport_freight": {
+        "asx_industrials": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
@@ -47,11 +43,15 @@
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
-        "asx_industrials": {
+        "transport_freight": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
         "capex_signals": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "new_orders": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         }
@@ -63,15 +63,7 @@
       "signal": "HOLD",
       "oneliner": "",
       "indicators": {
-        "sox_momentum": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
-        "taiwan_risk": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
-        "ai_capex_pipeline": {
+        "memory_demand": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
@@ -79,7 +71,15 @@
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
-        "memory_demand": {
+        "ai_capex_pipeline": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "sox_momentum": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "taiwan_risk": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         }
@@ -95,11 +95,11 @@
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
-        "gold_signal": {
+        "copper_price": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
-        "asx_materials": {
+        "gold_signal": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
@@ -107,7 +107,7 @@
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
-        "copper_price": {
+        "asx_materials": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         }
