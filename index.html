@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sector Rotation Signal Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Sector Rotation Signal Tracker
+   Cornerstone Media
+   ============================================================ */
+
+:root {
+  --bg: #08080f;
+  --surface: #1a1a28;
+  --card: #232334;
+  --border: #2f2f48;
+  --buy: #00d68f;
+  --sell: #ff3860;
+  --hold: #f0a500;
+  --neutral: #3a3a5c;
+  --text: #e2e2ee;
+  --muted: #5a5a7a;
+  --accent: #6c7ee1;
+  --r: 3px;
+  --pad-y: 28px;
+  --pad-x: 20px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255,255,255,0.012) 0px,
+    rgba(255,255,255,0.012) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.app {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: var(--pad-y) var(--pad-x);
+}
+
+/* ── Type helpers ── */
+.label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+.c-buy { color: var(--buy); }
+.c-sell { color: var(--sell); }
+.c-hold { color: var(--hold); }
+.c-neutral { color: var(--muted); }
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand { display: flex; align-items: center; gap: 12px; }
+
+.brand-text h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  color: var(--text);
+}
+.brand-text .sub {
+  margin-top: 3px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.topbar-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.clock { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 0.04em; }
+.clock .date { color: var(--muted); }
+
+.market-status {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+}
+.market-status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--neutral); }
+.market-status.open .dot { background: var(--buy); box-shadow: 0 0 7px var(--buy); }
+.market-status.open { color: var(--buy); }
+
+.settings-btn {
+  background: transparent; border: 1px solid var(--border); color: var(--muted);
+  width: 28px; height: 28px; border-radius: var(--r); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s, color 0.2s; margin-top: 2px;
+}
+.settings-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ============================================================
+   REGIME STRIP
+   ============================================================ */
+.regime {
+  margin-top: 18px;
+  display: flex; align-items: center; gap: 20px;
+  padding: 14px 18px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+}
+.regime-read {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 15px;
+  letter-spacing: 0.02em; transition: color 0.4s ease; white-space: nowrap;
+}
+.regime-meter {
+  flex: none; width: 120px; height: 2px;
+  background: var(--border); border-radius: 1px; position: relative;
+}
+.regime-meter .fill {
+  position: absolute; top: 0; left: 50%; height: 100%; width: 0;
+  background: var(--neutral); border-radius: 1px;
+  transition: width 0.9s cubic-bezier(0.4,0,0.2,1), background 0.4s ease, left 0.9s cubic-bezier(0.4,0,0.2,1);
+}
+.regime-meter .mid { position: absolute; left: 50%; top: 0; width: 1px; height: 100%; background: var(--border); }
+.regime-note {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  color: var(--muted); margin-left: auto; text-align: right; max-width: 360px; line-height: 1.5;
+}
+
+/* ============================================================
+   RUN BUTTON + PROGRESS
+   ============================================================ */
+.run-row { margin-top: 20px; }
+
+.run-btn {
+  width: 100%; padding: 13px;
+  background: transparent; border: 1px solid var(--accent); border-radius: var(--r);
+  color: var(--accent); font-family: 'Space Mono', monospace; font-size: 11px;
+  letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+}
+.run-btn:hover:not(:disabled) { background: var(--accent); color: #fff; }
+.run-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.prefix { font-size: 10px; line-height: 1; }
+
+.progress-bar {
+  height: 1px; background: var(--border); margin-top: 8px; border-radius: 1px; overflow: hidden;
+}
+.progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s ease; }
+
+.error-block {
+  margin-top: 10px; padding: 10px 14px;
+  border: 1px solid var(--sell); border-radius: var(--r);
+  color: var(--sell); font-size: 10px; letter-spacing: 0.04em; line-height: 1.5;
+}
+
+/* ============================================================
+   SECTION HEADERS
+   ============================================================ */
+.section { margin-top: 24px; }
+.section-head {
+  display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px;
+}
+.section-head .hint {
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 0.12em; color: var(--muted); opacity: 0.7;
+}
+
+/* ============================================================
+   ROTATION BAR
+   ============================================================ */
+.rotation-bar {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 18px 20px;
+}
+.rb-title { margin-bottom: 14px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  background: var(--card); border: 1px solid var(--border); padding: 10px 12px;
+  border-radius: var(--r); min-width: 100px; flex: 1;
+  transition: border-color 0.4s ease; position: relative;
+}
+.chip.leader { border-color: var(--buy); }
+
+.chip-rank {
+  position: absolute; top: 8px; right: 10px;
+  font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted);
+}
+.chip-sector {
+  font-family: 'Space Mono', monospace; font-size: 9px; text-transform: uppercase;
+  letter-spacing: 0.16em; color: var(--muted); margin-bottom: 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 14px;
+}
+.chip-signal {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px;
+  color: var(--muted); transition: color 0.4s ease; margin-bottom: 8px;
+}
+.chip-track { height: 2px; background: var(--border); border-radius: 1px; overflow: hidden; }
+.chip-fill {
+  height: 100%; width: 0%; background: var(--neutral); border-radius: 1px;
+  transition: width 0.9s cubic-bezier(0.4,0,0.2,1), background 0.4s ease;
+}
+.chip-leader-badge {
+  margin-top: 7px; font-family: 'Space Mono', monospace; font-size: 8px;
+  text-transform: uppercase; letter-spacing: 0.18em; color: var(--buy); display: none;
+}
+.chip.leader .chip-leader-badge { display: block; }
+
+/* ============================================================
+   SECTOR CARDS
+   ============================================================ */
+.sector-list { display: flex; flex-direction: column; gap: 12px; }
+
+.sector-card {
+  --signal-col: var(--neutral);
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--neutral); border-radius: var(--r);
+  overflow: hidden; transition: border-left-color 0.4s ease;
+}
+.sector-card.loaded { border-left-color: var(--signal-col); }
+
+.sc-header {
+  display: flex; align-items: center; gap: 16px; padding: 18px 20px;
+  cursor: pointer; transition: background 0.2s ease;
+}
+.sc-header:hover { background: rgba(255,255,255,0.02); }
+
+.sc-ring { flex: none; width: 52px; }
+
+.sc-id { flex: none; min-width: 132px; }
+.sc-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--text); line-height: 1.1; }
+.sc-ticker {
+  font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted); margin-top: 4px;
+  display: flex; align-items: center; gap: 7px;
+}
+
+.sc-summary { flex: 1; min-width: 0; font-size: 11px; line-height: 1.5; opacity: 0.92; }
+
+.sc-meta { flex: none; display: flex; align-items: center; gap: 18px; }
+.sc-score-wrap { text-align: right; }
+.sc-score-num {
+  font-family: 'Space Mono', monospace; font-size: 16px; letter-spacing: 0.02em;
+  color: var(--muted); transition: color 0.4s ease;
+}
+.sc-score-cap {
+  font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted); margin-top: 2px;
+}
+
+.chevron { flex: none; width: 16px; height: 16px; color: var(--muted); transition: transform 0.3s ease; }
+.sector-card.open .chevron { transform: rotate(180deg); }
+
+/* Signal pip */
+.pip {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--neutral); flex: none;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+.pip.buy { background: var(--buy); box-shadow: 0 0 7px var(--buy); }
+.pip.sell { background: var(--sell); box-shadow: 0 0 7px var(--sell); }
+.pip.hold { background: var(--hold); box-shadow: 0 0 7px var(--hold); }
+
+/* Drawer */
+.drawer { display: none; padding: 4px 20px 20px; border-top: 1px solid var(--border); }
+.sector-card.open .drawer { display: block; }
+.drawer-inner { padding-top: 16px; }
+
+.ind-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+
+.ind-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; }
+.ind-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.ind-name { font-size: 9px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); }
+.ind-spark { display: flex; align-items: center; gap: 5px; }
+
+.gauge-track { height: 2px; background: var(--border); border-radius: 1px; position: relative; margin: 6px 0 4px; }
+.gauge-fill {
+  position: absolute; top: 0; left: 50%; height: 100%; width: 0;
+  background: var(--neutral); border-radius: 1px;
+  transition: width 0.9s cubic-bezier(0.4,0,0.2,1), left 0.9s cubic-bezier(0.4,0,0.2,1), background 0.4s ease;
+}
+.gauge-mid { position: absolute; left: 50%; top: 0; width: 1px; height: 100%; background: var(--border); }
+.gauge-labels { display: flex; justify-content: space-between; margin-top: 6px; }
+.gauge-labels span { font-size: 8px; letter-spacing: 0.12em; color: var(--neutral); }
+
+.ind-summary { margin-top: 10px; font-size: 10px; line-height: 1.5; opacity: 0.82; }
+
+/* ============================================================
+   SKELETON
+   ============================================================ */
+.skeleton {
+  background: linear-gradient(90deg, var(--border) 0%, var(--card) 50%, var(--border) 100%);
+  background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 2px; display: block;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.sk-line { height: 9px; width: 100%; margin-bottom: 5px; }
+.sk-line.short { width: 60%; }
+.sk-line.mid { width: 80%; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.foot-left {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+}
+.foot-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--buy); box-shadow: 0 0 7px var(--buy);
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+@keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+.foot-right { font-size: 9px; letter-spacing: 0.1em; color: var(--muted); text-align: right; }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px;
+}
+.modal-overlay.hidden { display: none; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 28px; width: 100%; max-width: 440px;
+}
+.modal h2 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; margin-bottom: 6px; }
+.modal p { font-size: 10px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); margin-bottom: 5px; }
+.form-group input {
+  width: 100%; padding: 9px 12px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text); font-family: 'Space Mono', monospace; font-size: 11px;
+  outline: none; transition: border-color 0.15s; letter-spacing: 0.02em;
+}
+.form-group input:focus { border-color: var(--accent); }
+.modal-note {
+  background: rgba(108,126,225,0.06); border: 1px solid rgba(108,126,225,0.2);
+  border-radius: var(--r); padding: 10px 12px; font-size: 9px; color: var(--muted);
+  margin-bottom: 20px; line-height: 1.6; letter-spacing: 0.04em;
+}
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.btn-ghost {
+  padding: 9px 16px; background: transparent; border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--muted); font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.1em; cursor: pointer; transition: all 0.15s; text-transform: uppercase;
+}
+.btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+.btn-accent {
+  padding: 9px 20px; background: var(--accent); border: 1px solid var(--accent);
+  border-radius: var(--r); color: #fff; font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.1em; font-weight: 700; cursor: pointer;
+  transition: all 0.15s; text-transform: uppercase;
+}
+.btn-accent:hover { background: #5a6cd4; border-color: #5a6cd4; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+  .sc-summary { display: none; }
+  .sc-id { min-width: 0; flex: 1; }
+  .regime { flex-wrap: wrap; }
+  .regime-note { margin-left: 0; max-width: 100%; }
+  .topbar { flex-direction: column; gap: 14px; }
+  .topbar-right { align-items: flex-start; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="brand">
+      <!-- Brand mark: rounded-square with chart line -->
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="5" stroke="var(--accent)" stroke-width="1.5"/>
+        <polyline points="5,20 9,14 13,17 18,10 23,13" stroke="var(--buy)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <div class="brand-text">
+        <h1>Sector Rotation Signal Tracker</h1>
+        <div class="sub">Cornerstone Media · Daily Scan</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div id="clock" class="clock">—</div>
+      <div id="market-status" class="market-status">
+        <div class="dot"></div>
+        <span id="market-label">—</span>
+      </div>
+      <button class="settings-btn" id="settings-btn" title="Settings">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Market Regime -->
+  <div class="regime" id="regime">
+    <span class="label regime-label">Market Regime</span>
+    <span class="regime-read c-neutral" id="regime-read">Awaiting Scan</span>
+    <div class="regime-meter" id="regime-meter">
+      <div class="mid"></div>
+      <div class="fill" id="regime-fill"></div>
+    </div>
+    <div class="regime-note" id="regime-note">
+      <span class="skeleton sk-line mid"></span>
+      <span class="skeleton sk-line short" style="margin-top:4px"></span>
+    </div>
+  </div>
+
+  <!-- Run Button -->
+  <div class="run-row">
+    <button class="run-btn" id="run-btn">
+      <span class="prefix" id="run-prefix">◆</span>
+      <span id="run-label">Run Daily Scan</span>
+    </button>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="error-block hidden" id="error-block"></div>
+  </div>
+
+  <!-- Rotation Map -->
+  <div class="section">
+    <div class="section-head">
+      <span class="label">Rotation Map</span>
+      <span class="hint">top 5 by composite</span>
+    </div>
+    <div class="rotation-bar">
+      <div class="rb-title label">Sector Rotation · Relative Strength Rank</div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+
+  <!-- Sector Cards -->
+  <div class="section">
+    <div class="section-head">
+      <span class="label">Sectors · 5</span>
+      <span class="hint">click a row to expand indicators</span>
+    </div>
+    <div class="sector-list" id="sector-list"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="foot-left">
+      <div class="foot-dot"></div>
+      <span>Live Data Feed · 5 Indicators / Sector</span>
+    </div>
+    <div class="foot-right" id="foot-right">No scan run this session</div>
+  </footer>
+
+</div>
+
+<!-- Setup Modal -->
+<div class="modal-overlay hidden" id="modal-overlay">
+  <div class="modal">
+    <h2>Setup</h2>
+    <p>API keys and repository details are stored locally in your browser only.</p>
+    <div class="form-group">
+      <label>Anthropic API Key</label>
+      <input type="password" id="input-ak" placeholder="sk-ant-..." autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>GitHub Personal Access Token (repo scope)</label>
+      <input type="password" id="input-gt" placeholder="ghp_..." autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>GitHub Repo Owner</label>
+      <input type="text" id="input-ro" placeholder="your-username" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>GitHub Repo Name</label>
+      <input type="text" id="input-rn" placeholder="sector-rotation" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>API Proxy URL (optional — required outside Claude.ai)</label>
+      <input type="text" id="input-px" placeholder="https://your-proxy.vercel.app/api/claude" autocomplete="off">
+    </div>
+    <div class="modal-note">
+      CORS: Direct Anthropic API calls work inside Claude.ai artifact environments.
+      Running locally requires a proxy that forwards requests server-side.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="modal-cancel">Cancel</button>
+      <button class="btn-accent" id="modal-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── Safe string for DOM text nodes ──
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ─────────────────────────────────────────────
+// SECTOR + INDICATOR CONFIG
+// ─────────────────────────────────────────────
+
+const SECTORS = {
+  energy: {
+    label: 'Energy', ticker: 'XLE · NYSE',
+    indicators: {
+      supply: { label: 'Supply & Production', prompt: 'Search for current global crude oil supply and OPEC+ production levels vs quota. Report production mb/d and whether supply is tightening or expanding. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with data>"}. Signal 1 = supply tightening (bullish), -1 = oversupply (bearish), 0 = neutral.' },
+      eia_inventory: { label: 'EIA Inventory', prompt: 'Search for the latest EIA Weekly Petroleum Status Report crude oil inventory change. Find the weekly draw or build figure in millions of barrels. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with exact mb draw or build and week ending date>"}. Signal 1 = draw (inventory falling, bullish), -1 = build (inventory rising, bearish), 0 = change under 1mb.' },
+      price_momentum: { label: 'Price Momentum', prompt: 'Search for WTI crude oil current price and 30-day trend. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with current price and % change>"}. Signal 1 = up >3% over 4 weeks, -1 = down >3%, 0 = flat.' },
+      geopolitical_risk: { label: 'Geopolitical Risk', prompt: 'Search for current geopolitical events affecting oil supply: Middle East tensions, OPEC+ discipline, sanctions, shipping disruptions. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence on current risk level>"}. Signal 1 = elevated risk supporting prices, -1 = de-escalation, 0 = neutral.' },
+      inflation_linkage: { label: 'Inflation Linkage', prompt: 'Search for the latest US CPI energy component reading. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence on energy inflation direction>"}. Signal 1 = rising (sector tailwind), -1 = falling, 0 = stable.' }
+    }
+  },
+  industrials: {
+    label: 'Industrials', ticker: 'XLI · NYSE',
+    indicators: {
+      manufacturing_pmi: { label: 'Manufacturing PMI', prompt: 'Search tradingeconomics.com for the latest ISM Manufacturing PMI reading. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with exact PMI reading and date>"}. Signal 1 = above 52, -1 = below 48, 0 = 48–52.' },
+      new_orders: { label: 'New Orders', prompt: 'Search for the latest ISM Manufacturing New Orders sub-index. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with exact new orders reading>"}. Signal 1 = above 53, -1 = below 47, 0 = 47–53.' },
+      transport_freight: { label: 'Transport & Freight', prompt: 'Search for the latest Cass Freight Index or US trucking tonnage data. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence on freight volume trend>"}. Signal 1 = volume rising, -1 = declining, 0 = flat.' },
+      capex_signals: { label: 'Capex Signals', prompt: 'Search for latest US durable goods orders, specifically non-defense capital goods ex-aircraft. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with latest reading and trend>"}. Signal 1 = rising, -1 = declining, 0 = flat.' },
+      asx_industrials: { label: 'ASX Industrials', prompt: 'Search for ASX 200 Industrials sector or XNJ index current level and 1-month return. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with index level and return>"}. Signal 1 = up >3% past month, -1 = down >3%, 0 = flat.' }
+    }
+  },
+  semiconductors: {
+    label: 'Semiconductors / AI', ticker: 'SOXX · NASDAQ',
+    indicators: {
+      nvidia_revenue: { label: 'NVIDIA Revenue', prompt: 'Search for NVIDIA most recent quarterly revenue and earnings. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with key revenue figures>"}. Signal 1 = beat and positive guidance, -1 = miss or weak guidance, 0 = in-line.' },
+      memory_demand: { label: 'Memory Demand', prompt: 'Search for DRAM memory prices and demand outlook. Is memory in upcycle or downcycle? Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence on memory market>"}. Signal 1 = prices rising, demand strong, -1 = oversupply, 0 = stable.' },
+      taiwan_risk: { label: 'Taiwan Risk', prompt: 'Search for current Taiwan Strait geopolitical situation and TSMC production risk. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence on Taiwan risk>"}. Signal -1 = elevated tension (bearish), 1 = calm, 0 = neutral.' },
+      ai_capex_pipeline: { label: 'AI Capex Pipeline', prompt: 'Search for AI infrastructure spending from Microsoft, Google, Amazon, Meta. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence on hyperscaler AI capex>"}. Signal 1 = strong and growing, -1 = cuts or slowdown, 0 = steady.' },
+      sox_momentum: { label: 'SOX Momentum', prompt: 'Search for Philadelphia Semiconductor Index (SOX) or SOXX ETF current level and 30-day return. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with level and return>"}. Signal 1 = up >5% past month, -1 = down >5%, 0 = flat.' }
+    }
+  },
+  materials: {
+    label: 'Materials', ticker: 'XLB · NYSE',
+    indicators: {
+      copper_price: { label: 'Copper Price', prompt: 'Search for LME copper current price USD/tonne and 30-day trend. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with price and % change>"}. Signal 1 = up >3% past month, -1 = down >3%, 0 = flat.' },
+      gold_signal: { label: 'Gold Signal', prompt: 'Search for gold current price and trend vs real yields and USD. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with gold price and trend>"}. Signal 1 = rising, -1 = falling, 0 = stable.' },
+      china_pmi: { label: 'China PMI', prompt: 'Search for the latest China NBS or Caixin Manufacturing PMI. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with exact reading>"}. Signal 1 = above 51, -1 = below 49, 0 = 49–51.' },
+      usd_direction: { label: 'USD Direction', prompt: 'Search for US Dollar Index (DXY) current level and 30-day trend. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with DXY level and trend>"}. Signal 1 = USD weakening (commodities tailwind), -1 = strengthening (headwind), 0 = stable.' },
+      asx_materials: { label: 'ASX Materials', prompt: 'Search for ASX 200 Materials sector or XMJ index current level and 1-month return. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with index level and return>"}. Signal 1 = up >3% past month, -1 = down >3%, 0 = flat.' }
+    }
+  },
+  financials: {
+    label: 'Financials', ticker: 'XLF · NYSE',
+    indicators: {
+      rate_trajectory: { label: 'Rate Trajectory', prompt: 'Search for Federal Reserve and RBA rate outlook. Are rates expected to rise, fall, or hold? Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence on trajectory>"}. Signal 1 = cuts expected, -1 = hikes expected, 0 = on hold.' },
+      credit_spreads: { label: 'Credit Spreads', prompt: 'Search for US investment grade or high yield credit spreads. Are spreads widening or tightening? Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence on spread direction>"}. Signal 1 = tightening, -1 = widening, 0 = stable.' },
+      asx_banks: { label: 'ASX Banks', prompt: 'Search marketindex.com.au for ASX 200 Banks index (XBK) current level and 1-month return. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence with XBK level and return>"}. Signal 1 = up >3%, -1 = down >3%, 0 = flat.' },
+      loan_delinquency: { label: 'Loan Delinquency', prompt: 'Search for US bank loan delinquency rates or consumer credit quality trends. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence on loan quality>"}. Signal 1 = delinquencies stable or falling, -1 = rising, 0 = slight increase.' },
+      bbsw_hybrids: { label: 'BBSW / Hybrids', prompt: 'Search for BBSW (Bank Bill Swap Rate) Australia and Australian bank hybrid securities. Return ONLY a JSON object: {"signal": <-1|0|1>, "summary": "<one sentence on BBSW and hybrid market>"}. Signal 1 = stable or falling BBSW with hybrids performing well, -1 = BBSW spiking or stress, 0 = neutral.' }
+    }
+  }
+};
+
+const SECTOR_SUMMARY_PROMPT = (label, summaries) =>
+  `Based on these indicator readings for the ${label} sector: ${summaries}. Write a single sentence (max 18 words) summarising the sector outlook. Return ONLY a JSON object: {"oneliner": "<sentence>"}`;
+
+const BUY_THRESHOLD = 0.3;
+const SELL_THRESHOLD = -0.3;
+const MAX_ROUNDS = 8;
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+
+const state = {
+  results: {},
+  sparklines: {},
+  weights: null,
+  scanning: false,
+  loaded: false,
+  scanTs: null
+};
+
+// ─────────────────────────────────────────────
+// SETTINGS
+// ─────────────────────────────────────────────
+
+const LS = { ak: 'srst_ak', gt: 'srst_gt', ro: 'srst_ro', rn: 'srst_rn', px: 'srst_px' };
+
+const cfg = {
+  get ak() { return localStorage.getItem(LS.ak) || ''; },
+  get gt() { return localStorage.getItem(LS.gt) || ''; },
+  get ro() { return localStorage.getItem(LS.ro) || ''; },
+  get rn() { return localStorage.getItem(LS.rn) || ''; },
+  get px() { return localStorage.getItem(LS.px) || ''; },
+  ok() { return !!(this.ak && this.gt && this.ro && this.rn); }
+};
+
+// ─────────────────────────────────────────────
+// GITHUB API
+// ─────────────────────────────────────────────
+
+function ghHdr() {
+  return { 'Authorization': `token ${cfg.gt}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+}
+async function ghGet(path) {
+  const r = await fetch(`https://api.github.com/repos/${cfg.ro}/${cfg.rn}/contents/${path}`, { headers: ghHdr() });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(`GitHub GET ${path}: ${r.status}`);
+  return r.json();
+}
+async function ghPut(path, content, msg, sha) {
+  const body = { message: msg, content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), ...(sha ? { sha } : {}) };
+  const r = await fetch(`https://api.github.com/repos/${cfg.ro}/${cfg.rn}/contents/${path}`, { method: 'PUT', headers: ghHdr(), body: JSON.stringify(body) });
+  if (!r.ok) { const t = await r.text(); throw new Error(`GitHub PUT: ${r.status} ${t.slice(0, 200)}`); }
+  return r.json();
+}
+async function ghJSON(path) {
+  const d = await ghGet(path);
+  if (!d) return null;
+  try { return { json: JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g, ''))))), sha: d.sha }; }
+  catch { return null; }
+}
+
+// ─────────────────────────────────────────────
+// ANTHROPIC AGENTIC LOOP
+// ─────────────────────────────────────────────
+
+const SYS_BLOCK = {
+  type: 'text',
+  text: 'You are a financial market research analyst specialising in sector rotation signals. Use web_search to find current market data. Do not use training data for prices, indices, or economic readings. After researching, output ONLY a valid JSON object matching the format in the user prompt — no preamble, no explanation, no markdown.',
+  cache_control: { type: 'ephemeral' }
+};
+const SEARCH_TOOL = { type: 'web_search_20250305', name: 'web_search', cache_control: { type: 'ephemeral' } };
+
+function apiUrl() { return cfg.px || 'https://api.anthropic.com/v1/messages'; }
+function apiHdr() {
+  const h = { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-beta': 'prompt-caching-2024-07-31', 'anthropic-dangerous-direct-browser-access': 'true' };
+  cfg.px ? (h['x-anthropic-api-key'] = cfg.ak) : (h['x-api-key'] = cfg.ak);
+  return h;
+}
+
+async function agenticLoop(userPrompt) {
+  const messages = [{ role: 'user', content: userPrompt }];
+  let text = '';
+  for (let i = 0; i < MAX_ROUNDS; i++) {
+    const r = await fetch(apiUrl(), { method: 'POST', headers: apiHdr(), body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 512, system: [SYS_BLOCK], tools: [SEARCH_TOOL], messages }) });
+    if (!r.ok) { const t = await r.text(); throw new Error(`API ${r.status}: ${t.slice(0, 300)}`); }
+    const d = await r.json();
+    for (const b of d.content || []) { if (b.type === 'text') text += b.text + '\n'; }
+    // web_search is a server-side tool — stop_reason is always end_turn, no tool_result loop needed
+    if (d.stop_reason === 'end_turn' || d.stop_reason !== 'tool_use') break;
+    // Fallback: if client-side tool_use somehow fires, append and continue
+    messages.push({ role: 'assistant', content: d.content });
+  }
+  return text;
+}
+
+// ─────────────────────────────────────────────
+// JSON EXTRACTION (brace-counting)
+// ─────────────────────────────────────────────
+
+function extractJSON(text) {
+  if (!text) return null;
+  const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fence) { try { return JSON.parse(fence[1].trim()); } catch {} }
+  let d = 0; let s = -1;
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] === '{') { if (d === 0) s = i; d++; }
+    else if (text[i] === '}') { d--; if (d === 0 && s !== -1) { try { return JSON.parse(text.slice(s, i + 1)); } catch {} s = -1; } }
+  }
+  return null;
+}
+
+// ─────────────────────────────────────────────
+// SCORING
+// ─────────────────────────────────────────────
+
+function getW(sk, ik) { return state.weights?.[sk]?.[ik] ?? 1.0; }
+
+function composite(sk, inds) {
+  let ws = 0; let tw = 0;
+  for (const [k, d] of Object.entries(inds)) { const w = getW(sk, k); ws += (d.signal || 0) * w; tw += w; }
+  return tw > 0 ? ws / tw : 0;
+}
+
+// Map composite -1..1 to score 0..100
+function toScore(c) { return Math.round((c + 1) / 2 * 100); }
+
+function sigWord(c) { return c > BUY_THRESHOLD ? 'BUY' : c < SELL_THRESHOLD ? 'SELL' : 'HOLD'; }
+function sigCls(w) { return w === 'BUY' ? 'buy' : w === 'SELL' ? 'sell' : 'hold'; }
+function sigColor(w) { return w === 'BUY' ? 'var(--buy)' : w === 'SELL' ? 'var(--sell)' : w === 'HOLD' ? 'var(--hold)' : 'var(--neutral)'; }
+
+function regimeLabel(avgScore) {
+  if (avgScore >= 58) return { word: 'RISK-ON', cls: 'buy', note: null };
+  if (avgScore <= 44) return { word: 'RISK-OFF', cls: 'sell', note: null };
+  return { word: 'NEUTRAL', cls: 'hold', note: null };
+}
+
+// ─────────────────────────────────────────────
+// SCAN
+// ─────────────────────────────────────────────
+
+async function scanIndicator(sk, ik) {
+  try {
+    const text = await agenticLoop(SECTORS[sk].indicators[ik].prompt);
+    const p = extractJSON(text);
+    if (p && typeof p.signal === 'number') {
+      return { signal: Math.max(-1, Math.min(1, Math.round(p.signal))), summary: String(p.summary || '').slice(0, 200) };
+    }
+  } catch (e) { console.warn(`${sk}/${ik}`, e.message); }
+  return { signal: 0, summary: 'Data unavailable — scored neutral.' };
+}
+
+async function scanSummary(sk, inds) {
+  const sums = Object.entries(inds).map(([k, v]) => `${SECTORS[sk].indicators[k].label}: ${v.summary}`).join('; ');
+  try {
+    const text = await agenticLoop(SECTOR_SUMMARY_PROMPT(SECTORS[sk].label, sums));
+    const p = extractJSON(text);
+    if (p && p.oneliner) return String(p.oneliner).slice(0, 120);
+  } catch {}
+  return '';
+}
+
+function setProgress(done, total) {
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+async function runBatch(tasks) {
+  const OUT = [];
+  for (let i = 0; i < tasks.length; i += 10) {
+    OUT.push(...await Promise.all(tasks.slice(i, i + 10).map(f => f())));
+    if (i + 10 < tasks.length) await sleep(1200);
+  }
+  return OUT;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function runScan() {
+  if (state.scanning) return;
+  if (!cfg.ok()) { openModal(); return; }
+
+  state.scanning = true;
+  setScanningUI(true);
+  renderSectorCards(); // show skeletons
+
+  const TOTAL = 25 + 5;
+  let done = 0;
+  setProgress(0, TOTAL);
+
+  // Load GitHub data
+  try {
+    const wr = await ghJSON('weights/weights.json');
+    state.weights = wr ? wr.json : null;
+  } catch {}
+  try {
+    const sr = await ghJSON('history/sparklines.json');
+    state.sparklines = sr ? sr.json : Object.fromEntries(Object.keys(SECTORS).map(k => [k, []]));
+  } catch {
+    state.sparklines = Object.fromEntries(Object.keys(SECTORS).map(k => [k, []]));
+  }
+
+  // Init results
+  for (const sk of Object.keys(SECTORS)) {
+    state.results[sk] = { indicators: {}, composite: 0, score: 50, signal: 'HOLD', oneliner: '' };
+  }
+
+  // 25 indicator tasks
+  const tasks = [];
+  for (const [sk, sec] of Object.entries(SECTORS)) {
+    for (const ik of Object.keys(sec.indicators)) {
+      tasks.push(async () => {
+        const r = await scanIndicator(sk, ik);
+        state.results[sk].indicators[ik] = r;
+        done++;
+        setProgress(done, TOTAL);
+        updateSectorCard(sk);
+      });
+    }
+  }
+  await runBatch(tasks);
+
+  // 5 composite + summary calls
+  for (const sk of Object.keys(SECTORS)) {
+    const c = composite(sk, state.results[sk].indicators);
+    const sw = sigWord(c);
+    state.results[sk].composite = c;
+    state.results[sk].score = toScore(c);
+    state.results[sk].signal = sw;
+    const ol = await scanSummary(sk, state.results[sk].indicators);
+    state.results[sk].oneliner = ol;
+    done++;
+    setProgress(done, TOTAL);
+    updateSectorCard(sk);
+  }
+
+  // Sparklines
+  for (const sk of Object.keys(SECTORS)) {
+    if (!Array.isArray(state.sparklines[sk])) state.sparklines[sk] = [];
+    state.sparklines[sk].push(state.results[sk].score);
+    if (state.sparklines[sk].length > 30) state.sparklines[sk].shift();
+  }
+
+  // Persist (non-blocking)
+  const today = todayStr();
+  const payload = {
+    date: today,
+    sectors: Object.fromEntries(Object.entries(state.results).map(([k, v]) => [k, { composite: v.composite, score: v.score, signal: v.signal, oneliner: v.oneliner, indicators: Object.fromEntries(Object.entries(v.indicators).map(([ik, iv]) => [ik, { signal: iv.signal, summary: iv.summary }])) }])),
+    rotationLeader: Object.entries(state.results).filter(([,v]) => v.signal === 'BUY').sort(([,a],[,b]) => b.composite - a.composite)[0]?.[0] ?? null
+  };
+  (async () => { try { const e = await ghGet(`signals/${today}.json`); await ghPut(`signals/${today}.json`, payload, `Signal scan ${today}`, e?.sha); } catch (e) { showError(e.message); } })();
+  (async () => { try { const e = await ghJSON('history/sparklines.json'); await ghPut('history/sparklines.json', state.sparklines, 'Update sparklines', e?.sha); } catch {} })();
+
+  state.loaded = true;
+  state.scanTs = new Date();
+  state.scanning = false;
+  setScanningUI(false);
+  renderRotationChips();
+  renderRegime();
+  updateFooter();
+  setProgress(TOTAL, TOTAL);
+}
+
+// ─────────────────────────────────────────────
+// RING GAUGE (SVG, 52px, viewBox 0 0 44 44, r=18)
+// ─────────────────────────────────────────────
+
+const CIRC = 2 * Math.PI * 18; // 113.097
+
+function ringGaugeSVG(score, signal) {
+  const col = sigColor(signal);
+  const offset = CIRC * (1 - score / 100);
+  const word = signal === 'BUY' ? 'BUY' : signal === 'SELL' ? 'SELL' : signal === 'HOLD' ? 'HOLD' : '·';
+  return `<svg width="52" height="52" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g transform="rotate(-90 22 22)">
+      <circle cx="22" cy="22" r="18" stroke="var(--border)" stroke-width="5" fill="none"/>
+      <circle cx="22" cy="22" r="18" stroke="${col}" stroke-width="5" fill="none"
+        stroke-linecap="round" stroke-dasharray="${CIRC}" stroke-dashoffset="${offset.toFixed(2)}"
+        style="transition:stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1),stroke 0.4s ease"/>
+    </g>
+    <text x="22" y="25" text-anchor="middle" font-family="Syne,sans-serif" font-weight="800" font-size="8" fill="${col}">${esc(word)}</text>
+  </svg>`;
+}
+
+// ─────────────────────────────────────────────
+// SPARKLINE SVG (60×20, 7 pts)
+// ─────────────────────────────────────────────
+
+function sparkSVG(vals) {
+  if (!vals || vals.length < 2) return `<svg width="60" height="20"><line x1="0" y1="10" x2="60" y2="10" stroke="var(--border)" stroke-width="1"/></svg>`;
+  const pts = vals.slice(-7);
+  const mn = Math.min(...pts); const mx = Math.max(...pts); const rng = mx - mn || 1;
+  const pad = 2;
+  const coords = pts.map((v, i) => {
+    const x = pad + (i / (pts.length - 1)) * (60 - pad * 2);
+    const y = 20 - pad - ((v - mn) / rng) * (20 - pad * 2);
+    return [x.toFixed(1), y.toFixed(1)];
+  });
+  const last = pts[pts.length - 1];
+  const col = last >= 62 ? 'var(--buy)' : last <= 38 ? 'var(--sell)' : 'var(--hold)';
+  const lx = coords[coords.length - 1][0]; const ly = coords[coords.length - 1][1];
+  return `<svg width="60" height="20" viewBox="0 0 60 20">
+    <polyline points="${coords.map(c => c.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${lx}" cy="${ly}" r="1.8" fill="${col}"/>
+  </svg>`;
+}
+
+function dirArrowSVG(vals) {
+  if (!vals || vals.length < 3) return `<svg width="8" height="6"><line x1="0" y1="3" x2="8" y2="3" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  const t = vals.slice(-3); const d = t[2] - t[0];
+  if (d > 2) return `<svg width="8" height="6"><polyline points="0,6 4,0 8,6" fill="none" stroke="var(--buy)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  if (d < -2) return `<svg width="8" height="6"><polyline points="0,0 4,6 8,0" fill="none" stroke="var(--sell)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  return `<svg width="8" height="6"><line x1="0" y1="3" x2="8" y2="3" stroke="var(--hold)" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+}
+
+// ─────────────────────────────────────────────
+// INDICATOR BAR GAUGE (center-anchored, 0–100)
+// ─────────────────────────────────────────────
+
+function indValueFromSignal(signal) {
+  return signal > 0 ? 85 : signal < 0 ? 15 : 50;
+}
+
+function buildIndCard(sk, ik) {
+  const ind = SECTORS[sk].indicators[ik];
+  const card = document.createElement('div');
+  card.className = 'ind-card';
+  card.id = `ind-${sk}-${ik}`;
+
+  const top = document.createElement('div');
+  top.className = 'ind-top';
+  const name = document.createElement('div');
+  name.className = 'ind-name';
+  name.textContent = ind.label;
+  const spark = document.createElement('div');
+  spark.className = 'ind-spark';
+  spark.id = `spark-${sk}-${ik}`;
+  top.appendChild(name); top.appendChild(spark);
+
+  const gauge = document.createElement('div');
+  gauge.className = 'gauge-track';
+  const mid = document.createElement('div'); mid.className = 'gauge-mid';
+  const fill = document.createElement('div'); fill.className = 'gauge-fill'; fill.id = `gfill-${sk}-${ik}`;
+  gauge.appendChild(mid); gauge.appendChild(fill);
+
+  const labels = document.createElement('div');
+  labels.className = 'gauge-labels';
+  const sellLbl = document.createElement('span'); sellLbl.textContent = 'SELL';
+  const buyLbl = document.createElement('span'); buyLbl.textContent = 'BUY';
+  labels.appendChild(sellLbl); labels.appendChild(buyLbl);
+
+  const summary = document.createElement('div');
+  summary.className = 'ind-summary'; summary.id = `isum-${sk}-${ik}`;
+  summary.innerHTML = '<span class="skeleton sk-line"></span><span class="skeleton sk-line short" style="margin-top:4px"></span>';
+
+  card.appendChild(top); card.appendChild(gauge); card.appendChild(labels); card.appendChild(summary);
+  return card;
+}
+
+function updateIndCard(sk, ik, data) {
+  if (!data) return;
+  const val = indValueFromSignal(data.signal);
+  const sw = data.signal > 0 ? 'BUY' : data.signal < 0 ? 'SELL' : 'HOLD';
+  const col = sigColor(sw);
+
+  const fill = document.getElementById(`gfill-${sk}-${ik}`);
+  if (fill) {
+    const gw = Math.abs(val - 50);
+    const gl = val >= 50 ? 50 : val;
+    fill.style.left = gl + '%';
+    fill.style.width = gw + '%';
+    fill.style.background = col;
+  }
+
+  const sparkEl = document.getElementById(`spark-${sk}-${ik}`);
+  if (sparkEl) {
+    // Per-indicator sparkline not tracked — show static signal pip instead
+    const pip = document.createElement('div');
+    pip.className = `pip ${sigCls(sw)}`;
+    sparkEl.innerHTML = '';
+    sparkEl.appendChild(pip);
+  }
+
+  const sumEl = document.getElementById(`isum-${sk}-${ik}`);
+  if (sumEl) { sumEl.innerHTML = ''; sumEl.textContent = data.summary || 'Data retrieved.'; }
+}
+
+// ─────────────────────────────────────────────
+// SECTOR CARDS
+// ─────────────────────────────────────────────
+
+function buildSectorCard(sk) {
+  const sec = SECTORS[sk];
+  const card = document.createElement('div');
+  card.className = 'sector-card'; card.id = `sc-${sk}`;
+  card.style.setProperty('--signal-col', 'var(--neutral)');
+
+  // Header
+  const hdr = document.createElement('div');
+  hdr.className = 'sc-header'; hdr.setAttribute('role', 'button'); hdr.setAttribute('aria-expanded', 'false');
+  hdr.addEventListener('click', () => {
+    const open = card.classList.toggle('open');
+    hdr.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  // Ring
+  const ring = document.createElement('div');
+  ring.className = 'sc-ring'; ring.id = `ring-${sk}`;
+  ring.innerHTML = ringGaugeSVG(50, '');
+
+  // ID block
+  const idBlk = document.createElement('div'); idBlk.className = 'sc-id';
+  const nameEl = document.createElement('div'); nameEl.className = 'sc-name'; nameEl.textContent = sec.label;
+  const tickerRow = document.createElement('div'); tickerRow.className = 'sc-ticker';
+  const pip = document.createElement('div'); pip.className = 'pip'; pip.id = `pip-${sk}`;
+  const tickerTxt = document.createTextNode(sec.ticker);
+  tickerRow.appendChild(pip); tickerRow.appendChild(tickerTxt);
+  idBlk.appendChild(nameEl); idBlk.appendChild(tickerRow);
+
+  // Summary
+  const sumEl = document.createElement('div'); sumEl.className = 'sc-summary'; sumEl.id = `scsum-${sk}`;
+  sumEl.innerHTML = '<span class="skeleton sk-line mid"></span><span class="skeleton sk-line short" style="margin-top:5px"></span>';
+
+  // Meta
+  const meta = document.createElement('div'); meta.className = 'sc-meta';
+  const scoreWrap = document.createElement('div'); scoreWrap.className = 'sc-score-wrap';
+  const scoreNum = document.createElement('div'); scoreNum.className = 'sc-score-num'; scoreNum.id = `scnum-${sk}`; scoreNum.textContent = '––';
+  const scoreCap = document.createElement('div'); scoreCap.className = 'sc-score-cap'; scoreCap.textContent = 'COMPOSITE';
+  scoreWrap.appendChild(scoreNum); scoreWrap.appendChild(scoreCap);
+  const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  chevron.setAttribute('class', 'chevron'); chevron.setAttribute('viewBox', '0 0 24 24'); chevron.setAttribute('fill', 'none'); chevron.setAttribute('stroke', 'currentColor'); chevron.setAttribute('stroke-width', '2');
+  const chPath = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+  chPath.setAttribute('points', '6 9 12 15 18 9'); chevron.appendChild(chPath);
+  meta.appendChild(scoreWrap); meta.appendChild(chevron);
+
+  hdr.appendChild(ring); hdr.appendChild(idBlk); hdr.appendChild(sumEl); hdr.appendChild(meta);
+
+  // Drawer
+  const drawer = document.createElement('div'); drawer.className = 'drawer';
+  const inner = document.createElement('div'); inner.className = 'drawer-inner';
+  const grid = document.createElement('div'); grid.className = 'ind-grid'; grid.id = `indgrid-${sk}`;
+  for (const ik of Object.keys(sec.indicators)) grid.appendChild(buildIndCard(sk, ik));
+  inner.appendChild(grid); drawer.appendChild(inner);
+
+  card.appendChild(hdr); card.appendChild(drawer);
+  return card;
+}
+
+function renderSectorCards() {
+  const list = document.getElementById('sector-list');
+  list.innerHTML = '';
+  for (const sk of Object.keys(SECTORS)) list.appendChild(buildSectorCard(sk));
+}
+
+function updateSectorCard(sk) {
+  const r = state.results[sk];
+  if (!r) return;
+  const card = document.getElementById(`sc-${sk}`);
+  if (!card) return;
+
+  const sw = r.signal || 'HOLD';
+  const sc = sigCls(sw);
+  const col = sigColor(sw);
+
+  card.style.setProperty('--signal-col', col);
+  if (r.composite !== 0 || Object.keys(r.indicators).length > 0) card.classList.add('loaded');
+
+  // Pip
+  const pip = document.getElementById(`pip-${sk}`);
+  if (pip) pip.className = `pip ${sc}`;
+
+  // Ring
+  const ring = document.getElementById(`ring-${sk}`);
+  if (ring) ring.innerHTML = ringGaugeSVG(r.score || 50, sw);
+
+  // Score
+  const num = document.getElementById(`scnum-${sk}`);
+  if (num) { num.textContent = r.composite != null ? (r.composite >= 0 ? '+' : '') + r.composite.toFixed(2) : '––'; num.style.color = col; }
+
+  // Oneliner
+  const sumEl = document.getElementById(`scsum-${sk}`);
+  if (sumEl && r.oneliner) { sumEl.innerHTML = ''; sumEl.textContent = r.oneliner; }
+
+  // Indicators
+  for (const ik of Object.keys(SECTORS[sk].indicators)) {
+    updateIndCard(sk, ik, r.indicators[ik] || null);
+  }
+}
+
+// ─────────────────────────────────────────────
+// ROTATION CHIPS
+// ─────────────────────────────────────────────
+
+function renderRotationChips() {
+  const container = document.getElementById('chips');
+  container.innerHTML = '';
+
+  const ranked = Object.entries(state.results)
+    .map(([k, v]) => ({ k, score: v.score || 50, signal: v.signal || 'HOLD', composite: v.composite || 0 }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+
+  ranked.forEach((item, i) => {
+    const sec = SECTORS[item.k];
+    const sw = item.signal;
+    const sc = sigCls(sw);
+    const col = sigColor(sw);
+    const isLeader = i === 0;
+
+    const chip = document.createElement('div');
+    chip.className = `chip${isLeader ? ' leader' : ''}`;
+
+    const rank = document.createElement('div'); rank.className = 'chip-rank'; rank.textContent = `#${i + 1}`;
+    const sectorLbl = document.createElement('div'); sectorLbl.className = 'chip-sector'; sectorLbl.textContent = sec.label;
+    const sigEl = document.createElement('div'); sigEl.className = 'chip-signal'; sigEl.style.color = col; sigEl.textContent = sw;
+    const track = document.createElement('div'); track.className = 'chip-track';
+    const fill = document.createElement('div'); fill.className = 'chip-fill';
+    fill.style.width = item.score + '%'; fill.style.background = col;
+    track.appendChild(fill);
+    const badge = document.createElement('div'); badge.className = 'chip-leader-badge'; badge.textContent = '◆ Rotation Leader';
+
+    chip.appendChild(rank); chip.appendChild(sectorLbl); chip.appendChild(sigEl);
+    chip.appendChild(track); chip.appendChild(badge);
+    container.appendChild(chip);
+  });
+}
+
+// ─────────────────────────────────────────────
+// REGIME STRIP
+// ─────────────────────────────────────────────
+
+function renderRegime() {
+  const scores = Object.values(state.results).map(v => v.score || 50);
+  const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+  const { word, cls } = regimeLabel(avg);
+
+  const buySectors = Object.values(state.results).filter(v => v.signal === 'BUY').length;
+  const note = word === 'RISK-ON'
+    ? `${buySectors} of 5 sectors on BUY. Cyclical leadership supports adding risk.`
+    : word === 'RISK-OFF'
+    ? `Defensive posture — ${5 - buySectors} sectors showing SELL or HOLD signals.`
+    : `Mixed signals — ${buySectors} sectors on BUY. Exercise selective positioning.`;
+
+  const readEl = document.getElementById('regime-read');
+  if (readEl) { readEl.className = `regime-read c-${cls}`; readEl.textContent = word; }
+
+  const noteEl = document.getElementById('regime-note');
+  if (noteEl) { noteEl.innerHTML = ''; noteEl.textContent = note; }
+
+  const fill = document.getElementById('regime-fill');
+  if (fill) {
+    const pct = avg - 50; // -50 to +50
+    fill.style.background = sigColor(sigWord((avg - 50) / 50));
+    if (pct >= 0) { fill.style.left = '50%'; fill.style.width = pct + '%'; }
+    else { fill.style.left = (50 + pct) + '%'; fill.style.width = Math.abs(pct) + '%'; }
+  }
+}
+
+// ─────────────────────────────────────────────
+// CLOCK + MARKET STATUS
+// ─────────────────────────────────────────────
+
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function isMarketOpen(now) {
+  // US Eastern: NYSE open Mon–Fri 09:30–16:00 ET
+  const etOffset = -5 * 60; // rough ET (doesn't account for DST precisely)
+  const etNow = new Date(now.getTime() + (now.getTimezoneOffset() + etOffset) * 60000);
+  const day = etNow.getDay();
+  const mins = etNow.getHours() * 60 + etNow.getMinutes();
+  return day >= 1 && day <= 5 && mins >= 9 * 60 + 30 && mins < 16 * 60;
+}
+
+function tickClock() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  const dateStr = `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+
+  const clockEl = document.getElementById('clock');
+  if (clockEl) {
+    clockEl.innerHTML = `${hh}:${mm}:${ss} ET · <span class="date">${esc(dateStr)}</span>`;
+  }
+
+  const ms = document.getElementById('market-status');
+  const ml = document.getElementById('market-label');
+  if (ms && ml) {
+    const open = isMarketOpen(now);
+    ms.className = `market-status${open ? ' open' : ''}`;
+    ml.textContent = open ? 'Market Open' : 'Market Closed';
+  }
+}
+
+// ─────────────────────────────────────────────
+// UI STATES
+// ─────────────────────────────────────────────
+
+function setScanningUI(scanning) {
+  const btn = document.getElementById('run-btn');
+  const label = document.getElementById('run-label');
+  const prefix = document.getElementById('run-prefix');
+  if (!btn || !label || !prefix) return;
+  btn.disabled = scanning;
+  if (scanning) { prefix.textContent = '◇'; label.textContent = 'Scanning…'; }
+  else { prefix.textContent = '◆'; label.textContent = state.loaded ? 'Re-Run Daily Scan' : 'Run Daily Scan'; }
+}
+
+function updateFooter() {
+  const el = document.getElementById('foot-right');
+  if (!el) return;
+  if (state.scanTs) {
+    el.textContent = `Last scan ${MONTHS[state.scanTs.getMonth()]} ${state.scanTs.getDate()}, ${String(state.scanTs.getHours()).padStart(2,'0')}:${String(state.scanTs.getMinutes()).padStart(2,'0')}`;
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-block');
+  if (!el) return;
+  el.classList.remove('hidden');
+  el.textContent = `⚠ ${msg}`;
+}
+
+// ─────────────────────────────────────────────
+// MODAL
+// ─────────────────────────────────────────────
+
+function openModal() {
+  document.getElementById('input-ak').value = cfg.ak;
+  document.getElementById('input-gt').value = cfg.gt;
+  document.getElementById('input-ro').value = cfg.ro;
+  document.getElementById('input-rn').value = cfg.rn;
+  document.getElementById('input-px').value = cfg.px;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
+function saveModal() {
+  const ak = document.getElementById('input-ak').value.trim();
+  const gt = document.getElementById('input-gt').value.trim();
+  const ro = document.getElementById('input-ro').value.trim();
+  const rn = document.getElementById('input-rn').value.trim();
+  const px = document.getElementById('input-px').value.trim();
+  if (!ak || !gt || !ro || !rn) { alert('Anthropic key, GitHub token, owner, and repo name are required.'); return; }
+  localStorage.setItem(LS.ak, ak); localStorage.setItem(LS.gt, gt);
+  localStorage.setItem(LS.ro, ro); localStorage.setItem(LS.rn, rn);
+  px ? localStorage.setItem(LS.px, px) : localStorage.removeItem(LS.px);
+  closeModal();
+}
+
+// ─────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────
+
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// Init rotation chips with empty state
+function initChips() {
+  const container = document.getElementById('chips');
+  container.innerHTML = '';
+  Object.entries(SECTORS).forEach(([k, sec], i) => {
+    const chip = document.createElement('div'); chip.className = 'chip';
+    const rank = document.createElement('div'); rank.className = 'chip-rank'; rank.textContent = `#${i+1}`;
+    const sectorLbl = document.createElement('div'); sectorLbl.className = 'chip-sector'; sectorLbl.textContent = sec.label;
+    const sigEl = document.createElement('div'); sigEl.className = 'chip-signal'; sigEl.textContent = '—';
+    const track = document.createElement('div'); track.className = 'chip-track';
+    const fill = document.createElement('div'); fill.className = 'chip-fill';
+    track.appendChild(fill);
+    const badge = document.createElement('div'); badge.className = 'chip-leader-badge'; badge.textContent = '◆ Rotation Leader';
+    chip.appendChild(rank); chip.appendChild(sectorLbl); chip.appendChild(sigEl); chip.appendChild(track); chip.appendChild(badge);
+    container.appendChild(chip);
+  });
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  renderSectorCards();
+  initChips();
+
+  document.getElementById('run-btn').addEventListener('click', runScan);
+  document.getElementById('settings-btn').addEventListener('click', openModal);
+  document.getElementById('modal-save').addEventListener('click', saveModal);
+  document.getElementById('modal-cancel').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  });
+
+  if (!cfg.ok()) openModal();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "energy": {
+    "supply": 1.0,
+    "eia_inventory": 1.0,
+    "price_momentum": 1.0,
+    "geopolitical_risk": 1.0,
+    "inflation_linkage": 1.0
+  },
+  "industrials": {
+    "manufacturing_pmi": 1.0,
+    "new_orders": 1.0,
+    "transport_freight": 1.0,
+    "capex_signals": 1.0,
+    "asx_industrials": 1.0
+  },
+  "semiconductors": {
+    "nvidia_hyperscalers": 1.0,
+    "memory_demand": 1.0,
+    "taiwan_risk": 1.0,
+    "ai_capex_pipeline": 1.0,
+    "sox_momentum": 1.0
+  },
+  "materials": {
+    "copper_price": 1.0,
+    "gold_signal": 1.0,
+    "china_pmi": 1.0,
+    "usd_direction": 1.0,
+    "asx_materials": 1.0
+  },
+  "financials": {
+    "rate_trajectory": 1.0,
+    "credit_spreads": 1.0,
+    "asx_banks": 1.0,
+    "loan_delinquency": 1.0,
+    "bbsw_hybrids": 1.0
+  }
+}
