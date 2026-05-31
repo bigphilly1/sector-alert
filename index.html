@@ -494,11 +494,7 @@ body {
 <div class="modal-overlay hidden" id="modal-overlay">
   <div class="modal">
     <h2>Setup</h2>
-    <p>API keys and repository details are stored locally in your browser only.</p>
-    <div class="form-group">
-      <label>Anthropic API Key</label>
-      <input type="password" id="input-ak" placeholder="sk-ant-..." autocomplete="off">
-    </div>
+    <p>GitHub token and repository details are stored locally in your browser only. The Anthropic API key is stored securely on the server.</p>
     <div class="form-group">
       <label>GitHub Personal Access Token (repo scope)</label>
       <input type="password" id="input-gt" placeholder="ghp_..." autocomplete="off">
@@ -510,14 +506,6 @@ body {
     <div class="form-group">
       <label>GitHub Repo Name</label>
       <input type="text" id="input-rn" placeholder="sector-rotation" autocomplete="off">
-    </div>
-    <div class="form-group">
-      <label>API Proxy URL (optional — required outside Claude.ai)</label>
-      <input type="text" id="input-px" placeholder="https://your-proxy.vercel.app/api/claude" autocomplete="off">
-    </div>
-    <div class="modal-note">
-      CORS: Direct Anthropic API calls work inside Claude.ai artifact environments.
-      Running locally requires a proxy that forwards requests server-side.
     </div>
     <div class="modal-actions">
       <button class="btn-ghost" id="modal-cancel">Cancel</button>
@@ -617,15 +605,13 @@ const state = {
 // SETTINGS
 // ─────────────────────────────────────────────
 
-const LS = { ak: 'srst_ak', gt: 'srst_gt', ro: 'srst_ro', rn: 'srst_rn', px: 'srst_px' };
+const LS = { gt: 'srst_gt', ro: 'srst_ro', rn: 'srst_rn' };
 
 const cfg = {
-  get ak() { return localStorage.getItem(LS.ak) || ''; },
   get gt() { return localStorage.getItem(LS.gt) || ''; },
   get ro() { return localStorage.getItem(LS.ro) || ''; },
   get rn() { return localStorage.getItem(LS.rn) || ''; },
-  get px() { return localStorage.getItem(LS.px) || ''; },
-  ok() { return !!(this.ak && this.gt && this.ro && this.rn); }
+  ok() { return !!(this.gt && this.ro && this.rn); }
 };
 
 // ─────────────────────────────────────────────
@@ -665,10 +651,9 @@ const SYS_BLOCK = {
 };
 const SEARCH_TOOL = { type: 'web_search_20250305', name: 'web_search', cache_control: { type: 'ephemeral' } };
 
-function apiUrl() { return cfg.px || 'https://api.anthropic.com/v1/messages'; }
+function apiUrl() { return '/api/claude'; }
 function apiHdr() {
-  const h = { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-beta': 'prompt-caching-2024-07-31', 'anthropic-dangerous-direct-browser-access': 'true' };
-  cfg.px ? (h['x-anthropic-api-key'] = cfg.ak) : (h['x-api-key'] = cfg.ak);
+  const h = { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-beta': 'prompt-caching-2024-07-31' };
   return h;
 }
 
@@ -1221,24 +1206,20 @@ function showError(msg) {
 // ─────────────────────────────────────────────
 
 function openModal() {
-  document.getElementById('input-ak').value = cfg.ak;
   document.getElementById('input-gt').value = cfg.gt;
   document.getElementById('input-ro').value = cfg.ro;
   document.getElementById('input-rn').value = cfg.rn;
-  document.getElementById('input-px').value = cfg.px;
   document.getElementById('modal-overlay').classList.remove('hidden');
 }
 function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
 function saveModal() {
-  const ak = document.getElementById('input-ak').value.trim();
   const gt = document.getElementById('input-gt').value.trim();
   const ro = document.getElementById('input-ro').value.trim();
   const rn = document.getElementById('input-rn').value.trim();
-  const px = document.getElementById('input-px').value.trim();
-  if (!ak || !gt || !ro || !rn) { alert('Anthropic key, GitHub token, owner, and repo name are required.'); return; }
-  localStorage.setItem(LS.ak, ak); localStorage.setItem(LS.gt, gt);
-  localStorage.setItem(LS.ro, ro); localStorage.setItem(LS.rn, rn);
-  px ? localStorage.setItem(LS.px, px) : localStorage.removeItem(LS.px);
+  if (!gt || !ro || !rn) { alert('GitHub token, owner, and repo name are required.'); return; }
+  localStorage.setItem(LS.gt, gt);
+  localStorage.setItem(LS.ro, ro);
+  localStorage.setItem(LS.rn, rn);
   closeModal();
 }
 
