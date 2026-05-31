@@ -2,25 +2,30 @@
   "energy": [
     80,
     50,
+    50,
     50
   ],
   "industrials": [
     70,
+    50,
     50,
     50
   ],
   "semiconductors": [
     80,
     50,
+    50,
     50
   ],
   "materials": [
     80,
     50,
+    50,
     50
   ],
   "financials": [
     40,
+    50,
     50,
     50
   ]
