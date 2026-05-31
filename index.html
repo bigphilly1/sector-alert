@@ -660,13 +660,19 @@ async function ghGet(path) {
   return r.json();
 }
 async function ghPut(path, content, msg) {
-  // Always fetch fresh SHA immediately before write to avoid 409 conflicts
-  const existing = await ghGet(path);
-  const sha = existing?.sha;
-  const body = { message: msg, content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), ...(sha ? { sha } : {}) };
-  const r = await fetch('/api/github', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path, method: 'PUT', body }) });
-  if (!r.ok) { const t = await r.text(); throw new Error(`GitHub PUT: ${r.status} ${t.slice(0, 200)}`); }
-  return r.json();
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))));
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const existing = await ghGet(path);
+    const sha = existing?.sha;
+    const body = { message: msg, content: encoded, ...(sha ? { sha } : {}) };
+    const r = await fetch('/api/github', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path, method: 'PUT', body }) });
+    if (r.ok) return r.json();
+    const data = await r.json();
+    if (r.status !== 409) throw new Error(`GitHub PUT: ${r.status} ${JSON.stringify(data).slice(0, 200)}`);
+    // 409 = SHA conflict, retry with fresh GET
+    await new Promise(res => setTimeout(res, 200));
+  }
+  throw new Error('GitHub PUT: failed after 3 attempts (SHA conflict)');
 }
 async function ghJSON(path) {
   const d = await ghGet(path);
