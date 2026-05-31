@@ -1,7 +1,17 @@
 {
-  "energy": [],
-  "industrials": [],
-  "semiconductors": [],
-  "materials": [],
-  "financials": []
+  "energy": [
+    80
+  ],
+  "industrials": [
+    70
+  ],
+  "semiconductors": [
+    80
+  ],
+  "materials": [
+    80
+  ],
+  "financials": [
+    40
+  ]
 }
