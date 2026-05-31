@@ -1,0 +1,146 @@
+{
+  "date": "2026-05-31",
+  "sectors": {
+    "energy": {
+      "composite": 0,
+      "score": 50,
+      "signal": "HOLD",
+      "oneliner": "",
+      "indicators": {
+        "inflation_linkage": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "supply": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "geopolitical_risk": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "eia_inventory": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "price_momentum": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        }
+      }
+    },
+    "industrials": {
+      "composite": 0,
+      "score": 50,
+      "signal": "HOLD",
+      "oneliner": "",
+      "indicators": {
+        "asx_industrials": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "transport_freight": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "manufacturing_pmi": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "new_orders": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "capex_signals": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        }
+      }
+    },
+    "semiconductors": {
+      "composite": 0,
+      "score": 50,
+      "signal": "HOLD",
+      "oneliner": "",
+      "indicators": {
+        "taiwan_risk": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "memory_demand": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "sox_momentum": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "nvidia_revenue": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "ai_capex_pipeline": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        }
+      }
+    },
+    "materials": {
+      "composite": 0,
+      "score": 50,
+      "signal": "HOLD",
+      "oneliner": "",
+      "indicators": {
+        "gold_signal": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "usd_direction": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "copper_price": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "asx_materials": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "china_pmi": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        }
+      }
+    },
+    "financials": {
+      "composite": 0,
+      "score": 50,
+      "signal": "HOLD",
+      "oneliner": "",
+      "indicators": {
+        "asx_banks": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "bbsw_hybrids": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "rate_trajectory": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "loan_delinquency": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "credit_spreads": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        }
+      }
+    }
+  },
+  "rotationLeader": null
+}
