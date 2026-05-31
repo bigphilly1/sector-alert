@@ -388,6 +388,26 @@ body {
 }
 .btn-accent:hover { background: #5a6cd4; border-color: #5a6cd4; }
 
+/* How It Works button */
+.how-btn {
+  background: none; border: none; color: var(--accent); font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.12em; cursor: pointer; padding: 6px 0; opacity: 0.7;
+  transition: opacity 0.15s; text-transform: uppercase; margin-top: 4px;
+}
+.how-btn:hover { opacity: 1; }
+
+/* How It Works modal */
+.how-modal {
+  max-width: 560px; max-height: 80vh; overflow-y: auto; position: relative;
+}
+.how-modal h2 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; margin-bottom: 20px; }
+.how-section { margin-bottom: 20px; }
+.how-section h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 6px; }
+.how-section p { font-size: 11px; color: var(--muted); line-height: 1.7; }
+.how-close { position: absolute; top: 16px; right: 16px; cursor: pointer; color: var(--muted); font-size: 14px; }
+.how-close:hover { color: var(--text); }
+.how-close-btn { margin-top: 8px; }
+
 /* ============================================================
    RESPONSIVE
    ============================================================ */
@@ -457,6 +477,7 @@ body {
     </button>
     <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     <div class="error-block hidden" id="error-block"></div>
+    <button class="how-btn" id="how-btn">How &amp; why this works →</button>
   </div>
 
   <!-- Rotation Map -->
@@ -491,6 +512,45 @@ body {
 
 </div>
 
+<!-- How It Works Modal -->
+<div class="modal-overlay hidden" id="how-overlay">
+  <div class="modal how-modal">
+    <div class="how-close" id="how-close">✕</div>
+    <h2>How &amp; Why This Works</h2>
+
+    <div class="how-section">
+      <h3>What it does</h3>
+      <p>Every time you hit Run, this tool asks an AI to research 25 live market indicators across 5 sectors — Energy, Industrials, Semiconductors, Materials, and Financials. It scores each one, combines the scores into a sector signal (BUY / HOLD / SELL), then ranks the sectors by momentum. The strongest sector is flagged as the Rotation Leader.</p>
+    </div>
+
+    <div class="how-section">
+      <h3>Why sector rotation matters</h3>
+      <p>Money doesn't sit still. Institutional investors — pension funds, hedge funds, asset managers — constantly shift capital between sectors depending on where they think the economy is headed. Energy outperforms in inflationary periods. Tech leads in low-rate environments. Financials move with interest rates. Tracking where money is flowing gives you an early read on market direction before it shows up in the headlines.</p>
+    </div>
+
+    <div class="how-section">
+      <h3>How the AI scoring works</h3>
+      <p>Each indicator — say, the oil price trend for Energy, or the yield curve for Financials — gets its own live web search. The AI reads current data from financial sources, then scores the indicator from +2 (strongly bullish) to -2 (strongly bearish). It is explicitly told not to use its training data for prices or readings — it must find current numbers. The scores are weighted and averaged into a composite signal per sector.</p>
+    </div>
+
+    <div class="how-section">
+      <h3>What BUY / HOLD / SELL actually means</h3>
+      <p>These are not trading instructions. They are momentum signals. BUY means the weight of current evidence favours the sector. SELL means conditions are deteriorating. HOLD means signals are mixed. The value is in comparing sectors to each other — not in acting on any single reading in isolation.</p>
+    </div>
+
+    <div class="how-section">
+      <h3>Where the data is stored</h3>
+      <p>Each scan result is saved as a dated file in a private GitHub repository. This builds a history over time — the sparkline charts under each sector show you how the signal has moved over the past 30 days. Nothing is stored on your device or on this server.</p>
+    </div>
+
+    <div class="how-section">
+      <h3>What it cannot do</h3>
+      <p>This is a research and pattern tool, not a trading system. It does not account for your personal financial situation, risk tolerance, or time horizon. Market signals can be wrong, delayed, or incomplete. Always apply your own judgement and consult a financial adviser before making investment decisions.</p>
+    </div>
+
+    <button class="btn-accent how-close-btn" id="how-close-btn">Got it</button>
+  </div>
+</div>
 
 <script>
 'use strict';
@@ -1206,6 +1266,17 @@ document.addEventListener('DOMContentLoaded', () => {
   initChips();
 
   document.getElementById('run-btn').addEventListener('click', runScan);
+
+  // How It Works modal
+  function openHow() { document.getElementById('how-overlay').classList.remove('hidden'); }
+  function closeHow() { document.getElementById('how-overlay').classList.add('hidden'); }
+  document.getElementById('how-btn').addEventListener('click', openHow);
+  document.getElementById('settings-btn').addEventListener('click', openHow);
+  document.getElementById('how-close').addEventListener('click', closeHow);
+  document.getElementById('how-close-btn').addEventListener('click', closeHow);
+  document.getElementById('how-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('how-overlay')) closeHow();
+  });
 });
 </script>
 </body>
