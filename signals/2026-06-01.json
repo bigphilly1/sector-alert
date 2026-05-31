@@ -7,15 +7,7 @@
       "signal": "HOLD",
       "oneliner": "",
       "indicators": {
-        "eia_inventory": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
-        "inflation_linkage": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
-        "price_momentum": {
+        "geopolitical_risk": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
@@ -23,7 +15,15 @@
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
-        "geopolitical_risk": {
+        "eia_inventory": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "price_momentum": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "inflation_linkage": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         }
@@ -35,7 +35,15 @@
       "signal": "HOLD",
       "oneliner": "",
       "indicators": {
+        "new_orders": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
         "asx_industrials": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "capex_signals": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
@@ -44,14 +52,6 @@
           "summary": "Data unavailable — scored neutral."
         },
         "transport_freight": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
-        "capex_signals": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
-        "new_orders": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         }
@@ -63,7 +63,15 @@
       "signal": "HOLD",
       "oneliner": "",
       "indicators": {
+        "taiwan_risk": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
         "memory_demand": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "sox_momentum": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
@@ -72,14 +80,6 @@
           "summary": "Data unavailable — scored neutral."
         },
         "ai_capex_pipeline": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
-        "sox_momentum": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
-        "taiwan_risk": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         }
@@ -91,7 +91,7 @@
       "signal": "HOLD",
       "oneliner": "",
       "indicators": {
-        "china_pmi": {
+        "gold_signal": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
@@ -99,15 +99,15 @@
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
-        "gold_signal": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
-        "usd_direction": {
+        "china_pmi": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         },
         "asx_materials": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "usd_direction": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         }
@@ -119,14 +119,6 @@
       "signal": "HOLD",
       "oneliner": "",
       "indicators": {
-        "loan_delinquency": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
-        "asx_banks": {
-          "signal": 0,
-          "summary": "Data unavailable — scored neutral."
-        },
         "rate_trajectory": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
@@ -136,6 +128,14 @@
           "summary": "Data unavailable — scored neutral."
         },
         "bbsw_hybrids": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "asx_banks": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "loan_delinquency": {
           "signal": 0,
           "summary": "Data unavailable — scored neutral."
         }
