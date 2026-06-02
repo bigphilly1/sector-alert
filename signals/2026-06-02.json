@@ -1,0 +1,146 @@
+{
+  "date": "2026-06-02",
+  "sectors": {
+    "energy": {
+      "composite": 0,
+      "score": 50,
+      "signal": "HOLD",
+      "oneliner": "Energy sector outlook remains neutral amid data gaps, though geopolitical supply disruptions and mixed demand signals wa",
+      "indicators": {
+        "price_momentum": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "inflation_linkage": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "eia_inventory": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "supply": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "geopolitical_risk": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        }
+      }
+    },
+    "industrials": {
+      "composite": 0,
+      "score": 50,
+      "signal": "HOLD",
+      "oneliner": "Industrials face a cautious neutral outlook as fading PMI momentum and weakening new orders offset steady freight and go",
+      "indicators": {
+        "manufacturing_pmi": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "transport_freight": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "capex_signals": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "asx_industrials": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "new_orders": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        }
+      }
+    },
+    "semiconductors": {
+      "composite": 0.6,
+      "score": 80,
+      "signal": "BUY",
+      "oneliner": "AI capex supercycle and DRAM upcycle drive semis strongly bullish, with Taiwan geopolitical risk as key tail threat.",
+      "indicators": {
+        "taiwan_risk": {
+          "signal": -1,
+          "summary": "Taiwan Strait tensions are elevated in mid-2026, with China conducting frequent military encirclement patrols—including 29 aircraft and 7 warships as recently as May 26—alongside coast guard incursion"
+        },
+        "ai_capex_pipeline": {
+          "signal": 1,
+          "summary": "Microsoft, Alphabet, Amazon, and Meta have collectively committed $660–690B in AI infrastructure capex for 2026, nearly doubling 2025 levels, with all four companies raising guidance and signalling fu"
+        },
+        "sox_momentum": {
+          "signal": 1,
+          "summary": "SOXX ETF closed at $569.08 on May 29, 2026 (52-week range $204.84–$570.41), with the Philadelphia Semiconductor Index (SOX) at 12,829.38, up approximately 23% over the past 30 days — well above the +5"
+        },
+        "memory_demand": {
+          "signal": 1,
+          "summary": "DRAM is in a powerful AI-driven upcycle with conventional contract prices rising ~58–63% QoQ in Q2 2026 following a record ~90–95% surge in Q1, as suppliers reallocate capacity toward HBM and server a"
+        },
+        "nvidia_revenue": {
+          "signal": 1,
+          "summary": "NVIDIA Q1 FY2027 (ended April 26, 2026) revenue surged 85% YoY to $81.6B, beating the $79.2B estimate, with adj. EPS of $1.87 vs. $1.77 expected, and Q2 guidance of ~$91B topping the $87B consensus."
+        }
+      }
+    },
+    "materials": {
+      "composite": 0.4,
+      "score": 70,
+      "signal": "BUY",
+      "oneliner": "Surging copper and resilient China PMI lift ASX Materials, but a firming USD caps near-term upside.",
+      "indicators": {
+        "usd_direction": {
+          "signal": -1,
+          "summary": "DXY is currently near 99.2, up ~1% over the past 30 days (May), driven by sticky US inflation, elevated Fed rate-hike expectations, and unresolved US-Iran geopolitical tensions — a USD strengthening t"
+        },
+        "china_pmi": {
+          "signal": 1,
+          "summary": "China Caixin Manufacturing PMI came in at 51.8 in May 2026, beating the consensus forecast of 51.4 and remaining firmly in expansion territory above 50."
+        },
+        "gold_signal": {
+          "signal": 0,
+          "summary": "Gold is trading at ~$4,527/oz on June 2, 2026 — up ~32% year-over-year but down ~1.5% over the past month — caught in a near-term tug-of-war as a firming USD and rising real yields from persistent inf"
+        },
+        "copper_price": {
+          "signal": 1,
+          "summary": "LME copper is trading at approximately $14,462/tonne on June 2, 2026, up ~13.22% over the past 30 days, driven by tightening Chilean supply and strong AI/data centre demand."
+        },
+        "asx_materials": {
+          "signal": 1,
+          "summary": "The ASX 200 Materials Index (XMJ) is trading at approximately 23,788, up roughly +4.8% over the past month from ~22,700 at end-April 2026, driven by broad-based gains across iron ore, lithium, copper,"
+        }
+      }
+    },
+    "financials": {
+      "composite": -0.4,
+      "score": 30,
+      "signal": "SELL",
+      "oneliner": "Rising rates, deteriorating delinquencies, and sharp ASX bank losses signal a cautious underweight on Financials.",
+      "indicators": {
+        "rate_trajectory": {
+          "signal": -1,
+          "summary": "The Fed is on hold at 3.50–3.75% with markets pricing no cuts in 2026 and J.P. Morgan forecasting a hike in 2027, while the RBA has delivered three consecutive 25bp hikes in 2026 to 4.35% to combat re"
+        },
+        "loan_delinquency": {
+          "signal": 0,
+          "summary": "US loan delinquency shows a mixed, slightly deteriorating picture: aggregate household debt delinquency rose to 4.8% in Q4 2025, with credit card and mortgage serious delinquencies ticking up, while u"
+        },
+        "bbsw_hybrids": {
+          "signal": -1,
+          "summary": "The 3-month BBSW has been grinding higher, reaching 4.44% as of 22 May 2026 on an upward trajectory building since late April, while the broader hybrid market faces structural headwinds from APRA's ph"
+        },
+        "credit_spreads": {
+          "signal": 1,
+          "summary": "US credit spreads remain historically tight in May/June 2026, with the ICE BofA HY OAS at approximately 2.72%, well below long-run averages, signalling continued tightening/compression driven by stron"
+        },
+        "asx_banks": {
+          "signal": -1,
+          "summary": "The ASX 200 Banks index (XBK) is currently at approximately 3,931.90, reflecting a 1-month return of approximately -5.6% (down from ~4,165), well below the -3% threshold."
+        }
+      }
+    }
+  },
+  "rotationLeader": "semiconductors"
+}
