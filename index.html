@@ -393,6 +393,42 @@ body {
 .save-status.ok { color: var(--buy); }
 .save-status.fail { color: var(--sell); }
 
+/* ============================================================
+   PAPER TRADING
+   ============================================================ */
+.trade-bar {
+  display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+  border-top: 1px solid var(--border); background: rgba(0,0,0,0.18); flex-wrap: wrap;
+}
+.trade-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); white-space: nowrap; }
+.trade-field { display: flex; align-items: center; gap: 5px; }
+.trade-input {
+  width: 88px; padding: 5px 8px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text); font-family: 'Space Mono', monospace;
+  font-size: 11px; outline: none; transition: border-color 0.15s; letter-spacing: 0.02em;
+}
+.trade-input:focus { border-color: var(--accent); }
+.trade-pnl { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; margin-left: auto; white-space: nowrap; min-width: 80px; text-align: right; }
+.trade-pnl.pos { color: var(--buy); }
+.trade-pnl.neg { color: var(--sell); }
+.trade-pnl.zero { color: var(--muted); }
+.trade-clear { background: none; border: none; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 9px; cursor: pointer; padding: 2px 5px; letter-spacing: 0.1em; }
+.trade-clear:hover { color: var(--sell); }
+
+/* Total P&L strip */
+.pnl-strip {
+  margin-top: 14px; padding: 14px 20px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.pnl-strip-left { display: flex; flex-direction: column; gap: 3px; }
+.pnl-strip-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); }
+.pnl-strip-detail { font-size: 10px; color: var(--muted); letter-spacing: 0.04em; }
+.pnl-total { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; }
+.pnl-total.pos { color: var(--buy); }
+.pnl-total.neg { color: var(--sell); }
+.pnl-total.zero { color: var(--muted); }
+
 /* How It Works button */
 .how-btn {
   background: none; border: none; color: var(--accent); font-family: 'Space Mono', monospace;
@@ -484,6 +520,15 @@ body {
     <div class="error-block hidden" id="error-block"></div>
     <div class="save-status hidden" id="save-status"></div>
     <button class="how-btn" id="how-btn">How &amp; why this works →</button>
+  </div>
+
+  <!-- Paper Trading P&L Strip -->
+  <div class="pnl-strip" id="pnl-strip">
+    <div class="pnl-strip-left">
+      <div class="pnl-strip-lbl">Paper Trading · Total P&amp;L</div>
+      <div class="pnl-strip-detail" id="pnl-detail">No trades entered</div>
+    </div>
+    <div class="pnl-total zero" id="pnl-total">$0.00</div>
   </div>
 
   <!-- Rotation Map -->
@@ -644,6 +689,83 @@ const state = {
   loaded: false,
   scanTs: null
 };
+
+// ─────────────────────────────────────────────
+// PAPER TRADING STATE
+// ─────────────────────────────────────────────
+
+const TRADE_SIZE = 10000; // fixed $10,000 per trade
+
+const trades = Object.fromEntries(
+  Object.keys({ energy:1, industrials:1, semiconductors:1, materials:1, financials:1 })
+    .map(sk => [sk, { buyPrice: '', sellPrice: '' }])
+);
+
+function loadTrades() {
+  try {
+    const saved = localStorage.getItem('sector-trades');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      for (const sk of Object.keys(trades)) {
+        if (parsed[sk]) { trades[sk].buyPrice = parsed[sk].buyPrice || ''; trades[sk].sellPrice = parsed[sk].sellPrice || ''; }
+      }
+    }
+  } catch {}
+}
+
+function saveTrades() {
+  try { localStorage.setItem('sector-trades', JSON.stringify(trades)); } catch {}
+}
+
+function calcTradePnL(sk) {
+  const b = parseFloat(trades[sk].buyPrice);
+  const s = parseFloat(trades[sk].sellPrice);
+  if (!b || b <= 0) return null;
+  if (!s || s <= 0) return null;
+  const pnl = ((s - b) / b) * TRADE_SIZE;
+  const pct = ((s - b) / b) * 100;
+  return { pnl, pct };
+}
+
+function fmtPnL(pnl) {
+  const sign = pnl >= 0 ? '+' : '';
+  return `${sign}$${Math.abs(pnl).toFixed(2)}`;
+}
+
+function updateTradeBar(sk) {
+  const pnlEl = document.getElementById(`trade-pnl-${sk}`);
+  if (!pnlEl) return;
+  const result = calcTradePnL(sk);
+  if (!result) {
+    pnlEl.textContent = trades[sk].buyPrice ? '— awaiting sell' : '—';
+    pnlEl.className = 'trade-pnl zero';
+  } else {
+    const { pnl, pct } = result;
+    pnlEl.textContent = `${fmtPnL(pnl)} (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)`;
+    pnlEl.className = `trade-pnl ${pnl > 0 ? 'pos' : pnl < 0 ? 'neg' : 'zero'}`;
+  }
+  updatePnLStrip();
+}
+
+function updatePnLStrip() {
+  let total = 0; let buys = 0; let closed = 0;
+  for (const sk of Object.keys(trades)) {
+    if (trades[sk].buyPrice) buys++;
+    const r = calcTradePnL(sk);
+    if (r) { total += r.pnl; closed++; }
+  }
+  const totalEl = document.getElementById('pnl-total');
+  const detailEl = document.getElementById('pnl-detail');
+  if (totalEl) {
+    totalEl.textContent = closed > 0 ? fmtPnL(total) : '$0.00';
+    totalEl.className = `pnl-total ${total > 0 ? 'pos' : total < 0 ? 'neg' : 'zero'}`;
+  }
+  if (detailEl) {
+    if (buys === 0) detailEl.textContent = 'No trades entered';
+    else if (closed === 0) detailEl.textContent = `${buys} position${buys > 1 ? 's' : ''} open · awaiting sell price`;
+    else detailEl.textContent = `${closed} closed trade${closed > 1 ? 's' : ''} · ${buys - closed} open · $${TRADE_SIZE.toLocaleString()} per trade`;
+  }
+}
 
 // ─────────────────────────────────────────────
 // SETTINGS
@@ -1054,6 +1176,42 @@ function buildSectorCard(sk) {
 
   hdr.appendChild(ring); hdr.appendChild(idBlk); hdr.appendChild(sumEl); hdr.appendChild(meta);
 
+  // Trade bar
+  const tradeBar = document.createElement('div'); tradeBar.className = 'trade-bar';
+
+  const buyField = document.createElement('div'); buyField.className = 'trade-field';
+  const buyLbl = document.createElement('span'); buyLbl.className = 'trade-lbl'; buyLbl.textContent = 'Buy $';
+  const buyInput = document.createElement('input');
+  buyInput.type = 'number'; buyInput.className = 'trade-input'; buyInput.id = `buy-${sk}`;
+  buyInput.placeholder = '0.00'; buyInput.step = '0.01'; buyInput.min = '0';
+  buyInput.value = trades[sk].buyPrice;
+  buyInput.addEventListener('input', e => {
+    trades[sk].buyPrice = e.target.value; saveTrades(); updateTradeBar(sk);
+  });
+  buyField.appendChild(buyLbl); buyField.appendChild(buyInput);
+
+  const sellField = document.createElement('div'); sellField.className = 'trade-field';
+  const sellLbl = document.createElement('span'); sellLbl.className = 'trade-lbl'; sellLbl.textContent = 'Sell $';
+  const sellInput = document.createElement('input');
+  sellInput.type = 'number'; sellInput.className = 'trade-input'; sellInput.id = `sell-${sk}`;
+  sellInput.placeholder = '0.00'; sellInput.step = '0.01'; sellInput.min = '0';
+  sellInput.value = trades[sk].sellPrice;
+  sellInput.addEventListener('input', e => {
+    trades[sk].sellPrice = e.target.value; saveTrades(); updateTradeBar(sk);
+  });
+  sellField.appendChild(sellLbl); sellField.appendChild(sellInput);
+
+  const pnlEl = document.createElement('div'); pnlEl.className = 'trade-pnl zero'; pnlEl.id = `trade-pnl-${sk}`; pnlEl.textContent = '—';
+
+  const clearBtn = document.createElement('button'); clearBtn.className = 'trade-clear'; clearBtn.textContent = '✕ Clear';
+  clearBtn.addEventListener('click', () => {
+    trades[sk].buyPrice = ''; trades[sk].sellPrice = '';
+    buyInput.value = ''; sellInput.value = '';
+    saveTrades(); updateTradeBar(sk);
+  });
+
+  tradeBar.appendChild(buyField); tradeBar.appendChild(sellField); tradeBar.appendChild(pnlEl); tradeBar.appendChild(clearBtn);
+
   // Drawer
   const drawer = document.createElement('div'); drawer.className = 'drawer';
   const inner = document.createElement('div'); inner.className = 'drawer-inner';
@@ -1061,7 +1219,7 @@ function buildSectorCard(sk) {
   for (const ik of Object.keys(sec.indicators)) grid.appendChild(buildIndCard(sk, ik));
   inner.appendChild(grid); drawer.appendChild(inner);
 
-  card.appendChild(hdr); card.appendChild(drawer);
+  card.appendChild(hdr); card.appendChild(tradeBar); card.appendChild(drawer);
   return card;
 }
 
@@ -1286,7 +1444,10 @@ document.addEventListener('DOMContentLoaded', () => {
   tickClock();
   setInterval(tickClock, 1000);
 
+  loadTrades();
   renderSectorCards();
+  // Restore trade bar values and P&L after cards are built
+  for (const sk of Object.keys(trades)) updateTradeBar(sk);
   initChips();
 
   document.getElementById('run-btn').addEventListener('click', runScan);
