@@ -5,55 +5,55 @@
       "composite": 0.6,
       "score": 80,
       "signal": "BUY",
-      "oneliner": "Severe Hormuz supply shock and surging inflation underpin Energy, but ceasefire hopes and demand destruction cap near-te",
+      "oneliner": "Severe Hormuz-driven supply destruction and soaring inflation underpin Energy, despite near-term ceasefire-driven price ",
       "indicators": {
         "eia_inventory": {
           "signal": 1,
-          "summary": "EIA Weekly Petroleum Status Report (week ending May 29, 2026) showed a draw of 8.0 million barrels in U.S. commercial crude oil inventories (excluding SPR), bringing total stocks to 433.7 million barr"
-        },
-        "inflation_linkage": {
-          "signal": 1,
-          "summary": "The US CPI energy index surged 3.8% in April 2026 (month-over-month, seasonally adjusted), accounting for over 40% of the total monthly CPI increase, and is up 17.9% year-over-year — a strongly rising"
-        },
-        "geopolitical_risk": {
-          "signal": 1,
-          "summary": "Geopolitical risk is at maximum elevation: the Strait of Hormuz remains effectively closed following the February 28, 2026 US-Israel strikes on Iran, causing the largest oil supply disruption in recor"
+          "summary": "EIA Weekly Petroleum Status Report (week ending May 29, 2026) showed a draw of 8.0 million barrels in U.S. commercial crude oil inventories (excluding SPR), falling to 433.7 million barrels."
         },
         "price_momentum": {
           "signal": -1,
-          "summary": "WTI crude oil is trading at ~$90.54/bbl as of June 6, 2026, down approximately 15.25% over the past 30 days from ~$106.59, driven by ceasefire hopes in the Middle East and slowing global demand."
+          "summary": "WTI crude oil is trading at ~$90.54/bbl on June 6, 2026, down approximately 15.25% from its ~$106.80 level (~4 weeks ago on May 1), driven by ceasefire optimism in the Middle East and softening demand"
+        },
+        "geopolitical_risk": {
+          "signal": 1,
+          "summary": "Geopolitical risk is at maximum elevation: the Strait of Hormuz has been effectively closed since February 28, 2026 — cutting off ~20% of global seaborne oil supply for over 94 days — due to the US-Is"
+        },
+        "inflation_linkage": {
+          "signal": 1,
+          "summary": "The US CPI energy index surged 3.8% in April 2026 on a monthly basis — accounting for over 40% of the total all-items increase — and is up 17.9% year-over-year, signalling strongly rising energy infla"
         },
         "supply": {
           "signal": 1,
-          "summary": "Global crude supply is severely tightened: Strait of Hormuz flows collapsed ~30% to 14.6 mb/d in Q1 2026 (down ~6 mb/d from 20.4 mb/d a year prior) due to the US-Iran conflict, OPEC+ actual output fel"
+          "summary": "Global oil supply is severely tightened: the Strait of Hormuz closure (since Feb 28) shut in ~10.5 mb/d from Gulf producers in April (EIA), OPEC+ DoC crude output collapsed to ~33.19 mb/d in April (do"
         }
       }
     },
     "industrials": {
-      "composite": 0.8,
-      "score": 90,
+      "composite": 0.4,
+      "score": 70,
       "signal": "BUY",
-      "oneliner": "Industrials fundamentals are at four-year highs, but flat XNJ price action signals the market has largely priced in the ",
+      "oneliner": "Industrials momentum is broadly constructive — surging PMI and freight volumes offset a soft capex print and flat ASX pr",
       "indicators": {
-        "new_orders": {
-          "signal": 1,
-          "summary": "The ISM Manufacturing New Orders sub-index rose to 56.8 in May 2026, up 2.7 percentage points from April's reading of 54.1, marking the fifth consecutive month of expansion."
-        },
         "manufacturing_pmi": {
           "signal": 1,
-          "summary": "The ISM Manufacturing PMI rose to 54.0 in May 2026 (released June 1, 2026), its highest reading since May 2022, well above the expansion threshold of 52."
+          "summary": "The ISM Manufacturing PMI rose to 54.0 in May 2026, its highest reading since May 2022, up from 52.7 in April 2026."
+        },
+        "new_orders": {
+          "signal": 1,
+          "summary": "The ISM Manufacturing New Orders sub-index registered 56.8 in May 2026, up 2.7 percentage points from April's reading of 54.1, marking its fifth consecutive month of expansion."
         },
         "transport_freight": {
           "signal": 1,
-          "summary": "The ATA For-Hire Truck Tonnage Index has risen consistently in early 2026—up 0.4% in January, surging 2.6% in February, and edging 0.3% higher in March—with April unchanged but still up 3.5% year-over"
+          "summary": "The ATA For-Hire Truck Tonnage Index has risen consecutively through early 2026 — up 0.4% in January, surging 2.6% in February, and holding flat but elevated in April at 117.8, up 3.5% year-over-year,"
         },
         "capex_signals": {
-          "signal": 1,
-          "summary": "Core capex (nondefense capital goods ex-aircraft) fell -1.1% MoM in April 2026 (released May 28) but remains up +10.4% YoY — the highest year-over-year rate since May 2022 — following a strong +3.3% M"
+          "signal": -1,
+          "summary": "US non-defense capital goods orders ex-aircraft (core capex) fell 1.1% MoM in April 2026, reversing the prior month's 3.9% rise, signaling a near-term declining trend in business investment plans."
         },
         "asx_industrials": {
           "signal": 0,
-          "summary": "The ASX 200 Industrials (XNJ) is trading at approximately 8,040 (AUD), with a 1-month return of roughly flat (estimated −0.4% from ~8,073 a month ago), well within the ±3% neutral band."
+          "summary": "The ASX 200 Industrials Index (XNJ) is currently trading around 8,032, with a 1-month return of approximately +0.85%, indicating flat performance within the -3% to +3% neutral band."
         }
       }
     },
@@ -61,55 +61,55 @@
       "composite": 0.6,
       "score": 80,
       "signal": "BUY",
-      "oneliner": "Surging AI capex, record NVIDIA earnings, and a DRAM supercycle power semiconductors higher despite elevated Taiwan geop",
+      "oneliner": "AI-driven semiconductor supercycle accelerates, fuelled by $725B hyperscaler capex, record NVIDIA earnings, and surging ",
       "indicators": {
-        "ai_capex_pipeline": {
-          "signal": 1,
-          "summary": "Microsoft, Google, Amazon, and Meta are collectively committing $300B+ in AI infrastructure capex in 2025 — up from $162B in 2022 — with all four hyperscalers raising guidance and Goldman projecting a"
-        },
         "taiwan_risk": {
           "signal": -1,
-          "summary": "Taiwan Strait tensions are at multi-year highs in 2026, with intensified PLA military drills, gray-zone provocations, and growing TSMC production risks from both a potential blockade and Strait of Hor"
+          "summary": "Taiwan Strait tensions are at multi-year highs in 2026 — marked by record PLA military drills, intensified gray-zone activity, and compounding TSMC production risks from LNG/supply-chain disruptions —"
         },
         "memory_demand": {
           "signal": 1,
-          "summary": "DRAM is in a strong AI-driven supercycle with prices up 170%+ YoY, persistent supply shortages through at least 2027, and contract prices continuing to rise into mid-2026."
+          "summary": "DRAM is in a strong AI-driven supercycle with DDR4 and DDR5 spot prices continuing to extend gains as of early June 2026, supply constrained through at least 2028, and TrendForce reporting a ~90–95% Q"
         },
         "nvidia_revenue": {
           "signal": 1,
-          "summary": "NVIDIA Q3 FY2026 (ended Oct 26, 2025) delivered record revenue of $57.0B (+62% YoY), beating consensus of ~$55.2B, with non-GAAP EPS of $1.30 beating estimates by $0.04, and Q4 guidance of ~$65B well "
+          "summary": "NVIDIA Q4 FY2026 (ended Jan 25, 2026) delivered record revenue of $68.1B (+73% YoY), beating Wall Street consensus of ~$65.9B, with GAAP EPS of $1.76 and Q1 FY2027 guidance of ~$78B far exceeding anal"
         },
         "sox_momentum": {
           "signal": 1,
-          "summary": "SOXX ETF is trading near $602.72 (Jun 5, 2026) vs ~$492 a month ago, reflecting an approximately +22% 30-day return, while the Philadelphia Semiconductor Index (SOX) sits at 13,617.50, both driven by "
+          "summary": "SOXX ETF is trading at approximately $602.72 (Jun 5, 2026), up ~22% over the past 30 days from ~$492 on May 7, driven by a broad AI-fueled semiconductor rally."
+        },
+        "ai_capex_pipeline": {
+          "signal": 1,
+          "summary": "Microsoft, Google, Amazon, and Meta collectively committed ~$700B+ in AI infrastructure capex for 2026 — a ~64% increase over 2025 — with Q1 2026 earnings confirming accelerating spend across all four"
         }
       }
     },
     "materials": {
-      "composite": -0.2,
-      "score": 40,
+      "composite": 0,
+      "score": 50,
       "signal": "HOLD",
-      "oneliner": "Copper's supply-driven strength partly offsets headwinds from a firming DXY, falling gold, and flat China PMI, leaving A",
+      "oneliner": "Copper strength and firm China PMI offer upside, but a stronger USD and falling gold cap ASX Materials near neutral.",
       "indicators": {
         "usd_direction": {
           "signal": -1,
-          "summary": "DXY is trading near 99.5–100.07, up approximately 2.09% over the past 30 days, as a stronger-than-expected jobs report, sticky inflation at 3.8%, and ongoing Middle East safe-haven demand have driven "
+          "summary": "DXY is currently near 99.4, having strengthened approximately 2.09% over the past 30 days, driven by safe-haven demand amid Middle East tensions and reduced Fed rate-cut expectations on sticky US infl"
         },
         "china_pmi": {
-          "signal": 0,
-          "summary": "China's official NBS Manufacturing PMI came in at 50.0 in May 2026, down 0.3 points from April's 50.3, sitting exactly on the expansion/contraction threshold."
+          "signal": 1,
+          "summary": "The Caixin China Manufacturing PMI came in at 51.8 in May 2026, beating the 51.4 consensus forecast and marking the sixth consecutive month above the 50-point expansion threshold."
         },
         "gold_signal": {
           "signal": -1,
-          "summary": "Gold is falling sharply to ~$4,408/oz on June 5 2026, down ~6.8% over the past month, pressured by a rising 10-year real yield (TIPS) at 2.17% and a firming DXY near 99.4 on a blowout May jobs report "
-        },
-        "copper_price": {
-          "signal": 1,
-          "summary": "LME copper is trading at approximately $13,700/tonne as of June 4, 2026, up ~4.55% over the past 30 days, driven by supply tightness and tariff front-running."
+          "summary": "Gold is trading around $4,328–$4,416/oz on June 5–6, 2026, down ~7.7% over the past month and hitting its lowest level since March 2026, pressured by rising US real yields and a stronger USD following"
         },
         "asx_materials": {
           "signal": 0,
-          "summary": "The S&P/ASX 200 Materials (XMJ) index is trading near 23,788 as of June 6, 2026, with a 1-month return of approximately +1.36%, indicating flat sector performance."
+          "summary": "The S&P/ASX 200 Materials Index (XMJ) is trading around 23,788–24,551 as of early June 2026, with a 1-month return of approximately +1.36%, indicating flat performance within the -3% to +3% neutral ba"
+        },
+        "copper_price": {
+          "signal": 1,
+          "summary": "LME copper spot is ~$13,700/t as of June 4, 2026, up approximately +6% over the past 30 days from ~$12,900/t in early May, driven by supply disruptions and renewed demand momentum."
         }
       }
     },
@@ -117,30 +117,30 @@
       "composite": -0.4,
       "score": 30,
       "signal": "SELL",
-      "oneliner": "Elevated RBA rates and falling ASX banks weigh on Financials, though tight US credit spreads offer partial offset.",
+      "oneliner": "Financials face a cautious near-term outlook as RBA hikes and Fed hike risk pressure funding costs, offsetting tight cre",
       "indicators": {
-        "loan_delinquency": {
-          "signal": 0,
-          "summary": "US loan delinquency shows a mixed, slightly elevated picture: the Fed's all-loan rate held at 1.48% in Q4 2025 (below decade averages), credit card and personal loan delinquencies are stabilizing or d"
-        },
-        "bbsw_hybrids": {
-          "signal": -1,
-          "summary": "The 3-month BBSW has risen to 4.44% (week to 29 May 2026) with front-end rates holding elevated and diverging upward from retreating swap rates, signalling acute near-term funding tightness, while the"
-        },
         "rate_trajectory": {
           "signal": -1,
-          "summary": "Both the Fed (on hold at 3.50–3.75% with hike risk flagged by J.P. Morgan for 2027) and the RBA (actively hiking, now at 4.35% after three consecutive 2026 increases driven by elevated inflation) are "
+          "summary": "Both the Fed (on hold at 3.5–3.75% with hike risk flagged by J.P. Morgan for 2027) and the RBA (hiking aggressively to 4.35% for a third straight increase in 2026 amid above-target inflation) are in t"
+        },
+        "loan_delinquency": {
+          "signal": 0,
+          "summary": "US loan delinquency rates show a slight, mixed uptick — the Fed reports all-loan delinquency steady at 1.48% in Q4 2025, mortgage and student loan delinquencies edging higher, while credit card and pe"
         },
         "credit_spreads": {
           "signal": 1,
-          "summary": "US credit spreads are tightening, with the ICE BofA HY OAS near 2.72% (multi-decade lows) and State Street and Nuveen both confirming spreads are at or near year-to-date tights with no meaningful wide"
+          "summary": "US IG and HY credit spreads are tightening, with HY OAS at approximately 2.72% in May 2026 and IG spreads near historically tight levels (~80 bps), driven by strong risk appetite, spread compression a"
+        },
+        "bbsw_hybrids": {
+          "signal": -1,
+          "summary": "The 3-month BBSW is elevated at 4.44% as of 29 May 2026, with near-term funding rates holding firm or edging higher while hybrid trading margins remain compressed on short-dated issues and the broader"
         },
         "asx_banks": {
           "signal": -1,
-          "summary": "XBK (S&P/ASX 200 Banks) is trading at approximately 3,931.90, down roughly -9.2% over the past month, driven by a record CBA selloff and budget-related headwinds to lending growth."
+          "summary": "XBK (S&P/ASX 200 Banks) is currently at approximately 3,931.90, down roughly -5.6% over the past month, driven by a major CBA-led bank selloff in early May 2026."
         }
       }
     }
   },
-  "rotationLeader": "industrials"
+  "rotationLeader": "energy"
 }
