@@ -1,0 +1,146 @@
+{
+  "date": "2026-06-22",
+  "sectors": {
+    "energy": {
+      "composite": 0.6,
+      "score": 80,
+      "signal": "BUY",
+      "oneliner": "Energy faces a volatile inflection: ceasefire-driven price collapse offsets historic supply disruption, leaving the outl",
+      "indicators": {
+        "inflation_linkage": {
+          "signal": 1,
+          "summary": "The US CPI energy index rose 3.9% in May 2026, accelerating from 3.8% in April, with the energy component accounting for over 60% of the monthly all-items CPI increase and surging 23.5% over the past "
+        },
+        "eia_inventory": {
+          "signal": 1,
+          "summary": "EIA reported a draw of 8.262 million barrels in U.S. commercial crude oil inventories for the week ending June 12, 2026, the largest single-week draw since February."
+        },
+        "supply": {
+          "signal": 1,
+          "summary": "Global crude supply collapsed to 94.5 mb/d in May 2026 (down 13.6 mb/d from pre-conflict levels) as the Strait of Hormuz closure — triggering 11.3 mb/d of Middle East shut-ins — drove inventory draws "
+        },
+        "price_momentum": {
+          "signal": -1,
+          "summary": "WTI crude oil is currently trading at ~$76.54/bbl, down approximately 21.4% from ~$97.29/bbl four weeks ago, driven by the US-Iran ceasefire deal reopening the Strait of Hormuz and a surge in expected"
+        },
+        "geopolitical_risk": {
+          "signal": 1,
+          "summary": "Geopolitical risk remains heavily elevated: the 2026 Iran-U.S. war triggered the largest oil supply disruption in history via a near-total Strait of Hormuz closure (~10.5 mb/d offline), and despite a "
+        }
+      }
+    },
+    "industrials": {
+      "composite": 0.6,
+      "score": 80,
+      "signal": "BUY",
+      "oneliner": "Industrials outlook is broadly bullish: PMI, freight, and equities surge, though capex dip tempers conviction.",
+      "indicators": {
+        "manufacturing_pmi": {
+          "signal": 1,
+          "summary": "The ISM Manufacturing PMI registered 54.0 in May 2026, its highest reading since May 2022, per data published on tradingeconomics.com on June 1, 2026."
+        },
+        "new_orders": {
+          "signal": 1,
+          "summary": "The ISM Manufacturing New Orders sub-index registered 56.8 in May 2026, up 2.7 points from April's 54.1, marking its fifth consecutive month of expansion."
+        },
+        "capex_signals": {
+          "signal": -1,
+          "summary": "US non-defense capital goods orders ex-aircraft fell 1.1% MoM in April 2026 (the latest reading), reversing a 3.9% rise in March, signaling a near-term decline in business investment momentum."
+        },
+        "transport_freight": {
+          "signal": 1,
+          "summary": "The ATA For-Hire Truck Tonnage Index has risen every month in 2026 (Jan–Apr), climbing a cumulative 4.7% since end-2025 to 117.8 in April — its highest level since fall 2022 — with year-over-year tonn"
+        },
+        "asx_industrials": {
+          "signal": 1,
+          "summary": "ASX 200 Industrials (XNJ) last closed at approximately 8,358.60, up ~+4.5% over the past month from ~7,998 on 22 May 2026, exceeding the +3% threshold for a bullish signal."
+        }
+      }
+    },
+    "semiconductors": {
+      "composite": 0.2,
+      "score": 60,
+      "signal": "HOLD",
+      "oneliner": "Surging AI capex and record NVIDIA revenues power semiconductors higher, though Taiwan geopolitical risk looms large.",
+      "indicators": {
+        "taiwan_risk": {
+          "signal": -1,
+          "summary": "Taiwan Strait tensions are at multi-year highs in 2026, driven by intensified PLA military drills, Washington's ambiguous signals, and elevated TSMC supply-chain disruption risk that investors and ana"
+        },
+        "ai_capex_pipeline": {
+          "signal": 1,
+          "summary": "Microsoft, Google, Amazon, and Meta are collectively targeting ~$725B in AI infrastructure capex in 2026, up 77% year-over-year, with all four companies raising guidance and signalling continued accel"
+        },
+        "memory_demand": {
+          "signal": 1,
+          "summary": "DRAM is in a strong AI-driven upcycle with prices up ~171% YoY and supply substantially short of demand, a condition analysts expect to persist through at least 2026–2027."
+        },
+        "sox_momentum": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "nvidia_revenue": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        }
+      }
+    },
+    "materials": {
+      "composite": -0.2,
+      "score": 40,
+      "signal": "HOLD",
+      "oneliner": "A surging DXY and hawkish Fed pressure metals, though resilient copper and buoyant ASX Materials offer partial offsets.",
+      "indicators": {
+        "usd_direction": {
+          "signal": -1,
+          "summary": "DXY is currently ~100.82, having strengthened +1.71% over the past 30 days and hitting one-year highs near 101, driven by hawkish Fed signals and rate-hike expectations — a headwind for commodities."
+        },
+        "asx_materials": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "china_pmi": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "gold_signal": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        },
+        "copper_price": {
+          "signal": 0,
+          "summary": "Data unavailable — scored neutral."
+        }
+      }
+    },
+    "financials": {
+      "composite": -0.2,
+      "score": 40,
+      "signal": "HOLD",
+      "oneliner": "Financials face a cautious, neutral-to-negative tilt: hawkish central banks and rising delinquencies offset tight credit",
+      "indicators": {
+        "credit_spreads": {
+          "signal": 1,
+          "summary": "US credit spreads remain historically tight in June 2026, with the ICE BofA High Yield OAS at ~2.78%, well below its long-run average, signalling continued tightening/compressed risk premiums."
+        },
+        "bbsw_hybrids": {
+          "signal": 0,
+          "summary": "The 3-month BBSW is holding firm around 4.46–4.47% as of mid-June 2026, reflecting persistently elevated but stable near-term funding conditions, while ASX bank hybrids continue to trade above par wit"
+        },
+        "rate_trajectory": {
+          "signal": -1,
+          "summary": "Both the Fed and RBA are tilting hawkish — the Fed held at 3.50–3.75% in June 2026 with its dot plot showing median expectations for one to two hikes this year, while the RBA has already hiked to 4.35"
+        },
+        "loan_delinquency": {
+          "signal": -1,
+          "summary": "US consumer loan delinquencies are broadly rising, with aggregate household debt delinquency climbing to 4.8% in Q4 2025, auto loan delinquencies hitting a 15-year high, and credit deterioration now s"
+        },
+        "asx_banks": {
+          "signal": 0,
+          "summary": "The ASX 200 Banks index (XBK) is currently at approximately 3,931.90, reflecting a 1-month return of roughly -0.6%, indicating flat performance within the neutral signal range."
+        }
+      }
+    }
+  },
+  "rotationLeader": "energy"
+}
